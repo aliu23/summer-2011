@@ -1,5 +1,5 @@
 % Evaluating The Torque between 2 parallel PM's
-% allan liu 7/01/2011
+% allan liu 7/01/2011 
 
 function [Tx,Ty,Tz]= Torque(a1,b1,c1,a2,b2,c2,a,b,c,d,e,f,b1,b2);  
 
