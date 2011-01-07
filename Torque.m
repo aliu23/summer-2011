@@ -14,27 +14,22 @@ Ty=0;
 Tz=0; 
 mo=4*pi*10^-7; %constant
 
-for ii=[0,1];
-    for jj=[0,1];
-        for kk=[0,1];
-            for ll=[0,1];
-                for mm=[0,1];
-                    for nn=[0,1];
+for ii=[0,1]
+    for jj=[0,1]
+        for kk=[0,1]
+            for ll=[0,1]
+                for mm=[0,1]
+                    for nn=[0,1]
                         
-                        Cw=((-1).^mm.*c1)-f;
+                        Cw=(-1)^mm.*c1-f;
+                        Cv=(-1)^kk.*b1-e;
+                        Cu=(-1)^ii.*a1-d;
                         
-                        Cv=((-1).^kk.*b1)-e;
-                        
-                        Cu=((-1).^ii.*a1)-d;
-                        
-                        w=c-((-1).^mm).*c1+((-1).^nn).*c2;
-                        
-                        v=b-((-1).^kk).*b1+((-1).^ll).*b2;
-                        
-                        u=a-((-1).^ii).*a1+((-1).^jj).*a2;
+                        w=c-(-1)^mm.*c1+(-1)^nn.*c2;
+                        v=b-(-1)^kk.*b1+(-1)^ll.*b2;
+                        u=a-(-1)^ii.*a1+(-1)^jj.*a2;
                         
                         s=sqrt(u.^2+v.^2+w.^2);
-                        
                         
                         Ez=(1/36).*(-u.^3-18.*v.*u.^2-6.*u.*(w.^2+6.*Cu...
                             .*v-3.*v.*(2.*Cv+v)+3.*Cv.*s)+v.*(v.^2+6.*(w.^2+...
@@ -60,11 +55,9 @@ for ii=[0,1];
                            (Cw+w).*log(s-u)+(w.^2+s.*Cw.*w-v.*(2.*Cv+v)).*...
                            atan(u.*v./(w.*s))))+2.*(2.*Cw+w).*(u.^2+w.^2).*log(v+s));
                         
-                        Tx=Tx+((br1*br2/(4*pi*mo))*(-1).^(ii+jj+kk+ll+mm+nn)*Ex);
-                        
-                        Ty=Ty+((br1*br2/(4*pi*mo))*(-1).^(ii+jj+kk+ll+mm+nn)*Ey);
-                        
-                        Tz=Tz+((br1*br2/(4*pi*mo))*(-1).^(ii+jj+kk+ll+mm+nn)*Ez);
+                        Tx=Tx+(-1)^(ii+jj+kk+ll+mm+nn)*Ex;
+                        Ty=Ty+(-1)^(ii+jj+kk+ll+mm+nn)*Ey;
+                        Tz=Tz+(-1)^(ii+jj+kk+ll+mm+nn)*Ez;
                         
                     end
                 end
@@ -73,11 +66,15 @@ for ii=[0,1];
     end
 end
 
-
-                        
+Tx=Tx.*br1*br2/(4*pi*mo);
+Ty=Ty.*br1*br2/(4*pi*mo);
+Tz=Tz.*br1*br2/(4*pi*mo);
                         
 end
 
 
-
+%% test
+%
+% [Tx Ty Tz] = Torque(0.005,0.013,0.007,0.005,0.013,0.007,[0:0.001:0.035],-0.008,0.015,0,0,-0.047,1.23,-1.23)
+% figure; hold on; plot(real(Tx),'r'); plot(real(Ty),'b'); plot(real(Tz),'k'); legend('x','y','z')
 
