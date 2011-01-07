@@ -4,9 +4,6 @@ Summer 2011
 A collection of code developed over summer 2011 primarily by Allan Liu.
 This code will be integrated in time into other packages/projects.
 
-The code in this repository is distributed under the Apache License (v2)
-for now; its licensing may change when contributed into new projects. The
-Apache License is located at: <http://www.apache.org/licenses/LICENSE-2.0>
 
 Elliptic Integrals
 ------------------
@@ -25,6 +22,7 @@ Files:
 * `elliptic3.m`
 * `elliptic_tests.m`
 
+
 Magnet code
 -----------
 
@@ -35,6 +33,12 @@ Files:
 
 * `Torque.m` — Calculating the torque between two parallel cuboid magnets.
 
--------
+
+Copyright and licensing
+-----------------------
+
+The code in this repository is distributed under the Apache License (v2)
+for now; its licensing may change when contributed into new projects. The
+Apache License is located at: <http://www.apache.org/licenses/LICENSE-2.0>
 
 Copyright 2011 Allan Liu and Will Robertson
