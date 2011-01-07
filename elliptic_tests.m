@@ -13,7 +13,13 @@ end
 
 tryk = round(10000*tryk)/10000;
 
-tryk==ellKvalues % creates a vector of true's and falses
+fprintf('Complete F(m) for all m: ')
+
+if all(tryk==ellKvalues) % creates a vector of true's and falses
+  fprintf('passed\n')
+else
+  fprintf('some failed\n')
+end
 
 %% Complete E (true for all)
 
@@ -53,10 +59,12 @@ tryPI = round(10000*tryPI)/10000;
 tryPI
 
 tryPI==ellPIvalues1
+
+
 %% Complete Pi n>1 2 problems no elliptic3i and can only output real values
 %for real inputs
 
-n = 5
+n = 5;
 m = -5:0.5:5;
 
 ellPIvalues2 = [0.2271 - 0.5554*i, 0.2204 - 0.5698*i, 0.2124 - 0.5854*i, 0.2028 - 0.6024*i, 0.1911 - 0.6209*i, 0.1766 - 0.6413*i, 0.1585 - 0.6638*i, 0.1354 - 0.6888*i, 0.1048 - 0.717*i, 0.0626 - 0.7488*i, -0.7854*i, -0.1092 - 0.8279*i, inf, -0.2238 - 0.469*i, -0.1689 - 0.4558*i, -0.1417 - 0.4448*i, -0.1245 - 0.4353*i, -0.1124 - 0.4269*i, -0.1033 - 0.4194*i, -0.0961 - 0.4126*i, -0.0902 - 0.4064*i];
@@ -71,11 +79,39 @@ end
 
 tryPI = round(10000*tryPI)/10000;
 
-tryPI==ellPIvalues2;
+fprintf('Complete PI(m<=1,n>1): ')
 
-real(tryPI)==real(ellPIvalues2);
+if all(tryPI(m<=1)==ellPIvalues2(m<=1)) % creates a vector of true's and falses
+  fprintf('passed\n')
+else
+  
+  if all(real(tryPI(m<=1))==real(ellPIvalues2(m<=1)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
 
-tryPI
+
+fprintf('Complete PI(m >1,n>1): ')
+
+if all(tryPI(m>1)==ellPIvalues2(m>1)) % creates a vector of true's and falses
+  fprintf('passed\n')
+else
+  
+  if all(real(tryPI(m>1))==real(ellPIvalues2(m>1)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+   
+%%
+
+real(tryPI(m<1))==real(ellPIvalues2(m<1))
 
 %% complete Pi negative n (no elliptic3i prob)
 
