@@ -7,7 +7,7 @@ tryk = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryk(ii) = ellipticF(m(ii));
+    tryk(ii) = elliptic12(m(ii));
     
 end
 
@@ -24,7 +24,7 @@ tryE = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryE(ii) = ellipticE(m(ii));
+    [~, tryE(ii)] = elliptic12(m(ii));
     
 end
 
@@ -107,7 +107,7 @@ tryF = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryF(ii) = ellipticF(b,m(ii));
+    tryF(ii) = elliptic12(b,m(ii));
     
 end
 
@@ -128,7 +128,7 @@ tryE = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryE(ii) = ellipticE(b,m(ii));
+    [~, tryE(ii)] = elliptic12(b,m(ii));
     
 end
 
@@ -192,7 +192,7 @@ tryF = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryF(ii) = ellipticF(b,m(ii));
+    tryF(ii) = elliptic12(b,m(ii));
     
 end
 
@@ -216,7 +216,7 @@ tryE = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryE(ii) = ellipticE(b,m(ii));
+    [~, tryE(ii)] = elliptic12(b,m(ii));
     
 end
 
@@ -284,7 +284,7 @@ tryF = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryF(ii) = ellipticF(b,m(ii));
+    tryF(ii) = elliptic12(b,m(ii));
     
 end
 
@@ -310,7 +310,7 @@ tryE = nan(size(m));
 
 for ii = 1:length(m)
 
-    tryE(ii) = ellipticE(b,m(ii));
+    [~, tryE(ii)] = elliptic12(b,m(ii));
     
 end
 
