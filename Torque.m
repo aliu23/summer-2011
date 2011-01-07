@@ -22,8 +22,8 @@ for ii=[0,1]
                     for nn=[0,1]
                         
                         
-                        
-                        Ex=
+                        u=
+                        Ex=...;
                         Tx=Tx+((b1*b2/(4*pi*mo))*(-1).^(ii+jj+kk+ll+mm+nn)*Ex)
                         
                       
