@@ -1,5 +1,3 @@
-%hello
-
 %% Complete F (true for all) 
 
 m = -5:0.5:5;
@@ -16,7 +14,6 @@ end
 tryk = round(10000*tryk)/10000;
 
 tryk==ellKvalues % creates a vector of true's and falses
-
 
 %% Complete E (true for all)
 
@@ -364,3 +361,5 @@ tryPI = round(10000*tryPI)/10000;
 tryPI
 
 tryPI==ellPIvalues32
+
+% this is the end
