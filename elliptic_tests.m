@@ -590,8 +590,8 @@ else
   
 end 
 
-%% incomplete F b>pi/2 (for all m<0 the output is wrong ?) 
-%for m>1 correct up until we encounter complex outputs then it just spits
+%% incomplete F b>pi/2 (for all m<M works) 
+%for m>M correct up until we encounter complex outputs then it just spits
 %out the reals
 
 b=2

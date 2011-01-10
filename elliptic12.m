@@ -93,8 +93,16 @@ if nargin==1  %now b= pi/2
     end
     
 elseif nargin==2
+   
+    if b>pi/2 || b<0
         
- if m<0
+        phi = mod(b+pi/2,pi)-pi/2;
+        a = round(b/pi);
+        [F1,E1]=elliptic12(m);
+        [FF,EE]=elliptic12(abs(phi),m);
+        E = 2*a.*E1 + sign(phi)*EE;
+        
+   elseif m<0
         t=asin((sin(b)*sqrt(1-m))/sqrt(1-m*(sin(b))^2));   
         [FF,EE]= elliptic12(t,-m/(1-m)); %to define if your using the F output in elliptic12 or the E output
         E=m*(sin(t)*cos(t)/sqrt(1-m*(cos(t))^2))+sqrt(1-m)*EE;
