@@ -40,7 +40,13 @@ if nargin==1  %now b= pi/2
     
 elseif nargin==2
     
-    if m<0 
+    if b>pi/2 || b<0
+        
+        phi = mod(b+pi/2,pi)-pi/2;
+        a = round(b/pi);
+        F = 2*a.*elliptic12(m) + sign(phi)*elliptic12(abs(phi),m);
+   
+    elseif m<0 
     
         t=asin((sin(b)*sqrt(1-m))/sqrt(1-m*(sin(b))^2)); %t is actually theta
         F=(1/sqrt(1-m))*elliptic12i(t,-m/(1-m)); 
@@ -51,10 +57,6 @@ elseif nargin==2
         F=(1/sqrt(m))*(elliptic12i(asin(sqrt(m)*sin(b)),1/m)); %cannot output complex part
         disp('complex part may be missing');
         
-    elseif b>pi || b<0
-        
-        error('b not between 0 and pi/2')
-   
     else  
           
         F=elliptic12i(b,m);
