@@ -63,7 +63,7 @@ if nargin==2 || b==pi/2  %now b= pi/2 so its in the form of ellipticP(n,m)
     elseif n>1 && m<=1 %%only gives real
         
         P=ellippin(n,m);
-        disp('complex part may be missing')
+        %disp('complex part may be missing')
         
     elseif n>1 && m>1
             
@@ -78,14 +78,17 @@ if nargin==2 || b==pi/2  %now b= pi/2 so its in the form of ellipticP(n,m)
     
     elseif nargin==3
 
-        if m<0 && n<1
-        t=asin((sin(b)*sqrt(1-m))/sqrt(1-m*(sin(b))^2));
-        P=1/((n-m)*sqrt(1-m))*(-m*ellipticF(t,-m/(1-m))+n*elliptic3ic(t,-m/(1-m),(n-m)/(1-m)));
-    
+        if m==n
+        [FF,EE]= elliptic12(b,m);
+        P=(1/(1-m))*(EE-((m/sqrt(1-m*(sin(b))^2))*sin(b)*cos(b)));
+            
         elseif m>1 && n<1
         P=1/sqrt(m)*elliptic3ic(asin(sqrt(m)*sin(b)),1/m,n/m); %if phase angle is complex cannot compute
         
-       
+        elseif m<0 && n<1
+        t=asin((sin(b)*sqrt(1-m))/sqrt(1-m*(sin(b))^2));
+        P=1/((n-m)*sqrt(1-m))*(-m*elliptic12(t,-m/(1-m))+n*elliptic3ic(t,-m/(1-m),(n-m)/(1-m)));
+    
         elseif n<1
         P=elliptic3ic(b,m,n);
         

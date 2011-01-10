@@ -101,7 +101,7 @@ elseif nargin==2
         
         [FF,EE]=elliptic12i(asin(sqrt(m)*sin(b)),1/m); %cannot display complex part      
         E=((1/sqrt(m))-sqrt(m))*FF+sqrt(m)*EE;
-        disp('may not display complex part')
+        disp('complex part may be missing');
      
  else 
         

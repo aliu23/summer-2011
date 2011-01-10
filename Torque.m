@@ -52,7 +52,7 @@ for ii=[0,1]
                            (-8.*v.*u+s.^2+8.*Cv.*s+6.*v.*s)+4.*(2.*Cv.*u.*...
                            w.*acoth(u./s)+w.*(v.^2+2.*Cv.*v-w.*(2.*Cw+w))...
                            *acoth(v./s)-u.*(2.*w.*(Cw+w).*atan(v./w)+2*v.*...
-                           (Cw+w).*log(s-u)+(w.^2+s.*Cw.*w-v.*(2.*Cv+v)).*...
+                           (Cw+w).*log(s-u)+(w.^2+2.*Cw.*w-v.*(2.*Cv+v)).*...
                            atan(u.*v./(w.*s))))+2.*(2.*Cw+w).*(u.^2+w.^2).*log(v+s));
                         
                         Tx=Tx+(-1)^(ii+jj+kk+ll+mm+nn)*Ex;
@@ -74,7 +74,6 @@ end
 
 
 %% test
-%
-% [Tx Ty Tz] = Torque(0.005,0.013,0.007,0.005,0.013,0.007,[0:0.001:0.035],-0.008,0.015,0,0,-0.047,1.23,-1.23)
-% figure; hold on; plot(real(Tx),'r'); plot(real(Ty),'b'); plot(real(Tz),'k'); legend('x','y','z')
+%[Tx Ty Tz] = Torque(0.005,0.013,0.007,0.005,0.013,0.007,[0:0.001:0.035],-0.008,0.015,0,0,-0.047,1.23,-1.23)
+ %figure; hold on; plot(real(Tx),'r'); plot(real(Ty),'b'); plot(real(Tz),'k'); legend('x','y','z')
 
