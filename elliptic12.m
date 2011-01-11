@@ -91,7 +91,7 @@ elseif nargin==2 %2 inputs of b and m
         bb=b(mpos_ind);
         
         F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm)); %cannot output complex part
-        disp('complex part may be missing');
+        % disp('complex part may be missing');
     end
     
     mreg_ind=m<=1&m>=0 & ~phase_ind;
@@ -187,7 +187,7 @@ elseif nargin==2
         
         [FF,EE]=elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm); %cannot display complex part      
         E(mpos_ind)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
-        disp('complex part may be missing');
+        % disp('complex part may be missing');
     end
 
     mreg_ind=m<=1&m>0 & ~phase_ind;
