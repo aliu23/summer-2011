@@ -3,17 +3,8 @@
 m = -5:0.5:5;
 ellKvalues = [0.9555, 0.981, 1.0095, 1.0416, 1.0783, 1.1209, 1.1714, 1.233, 1.311, 1.4157, 1.5708, 1.8541, inf, 1.6566 - 1.4157*i, 1.311 - 1.311*i, 1.1242 - 1.233*i, 1.0011 - 1.1714*i, 0.9117 - 1.1209*i, 0.8429 - 1.0783*i, 0.7877 - 1.0416*i, 0.7422 - 1.0095*i];
 
-tryk = nan(size(m));
-
-for ii = 1:length(m)
-
-    tryk(ii) = elliptic12(m(ii));
-    
-end
-
+tryk = elliptic12(m);
 tryk = round(10000*tryk)/10000;
-
-tryk==ellKvalues       % creates a vector of true's and falses
 
 fprintf('Complete for all m: ')
 
@@ -38,10 +29,6 @@ for ii = 1:length(m)
 end
 
 tryE = round(10000*tryE)/10000;
-
-tryE;
-
-tryE==ellEvalues
 
 fprintf('Complete E for all m: ')
 
@@ -68,10 +55,6 @@ for ii = 1:length(m)
 end
 
 tryPI = round(10000*tryPI)/10000;
-
-tryPI;
-
-tryPI==ellPIvalues1
 
 fprintf('critical value for where b input goes from real to complex is M=1\n')
 
@@ -127,8 +110,6 @@ tryPI = round(10000*tryPI)/10000;
 
 tryPI;
 
-tryPI==ellPIvalues2
-
 fprintf('critical value for where b input goes from real to complex is M=1\n')
 
 fprintf('Complete PI(m<=1,n>1): ')
@@ -176,10 +157,6 @@ for ii = 1:length(m)
 end
 
 tryPI = round(10000*tryPI)/10000;
-
-tryPI;
-
-tryPI==ellPIvalues3
 
 fprintf('critical value for where b input goes from real to complex is M=1\n')
 
@@ -232,11 +209,6 @@ end
 
 tryF = round(10000*tryF)/10000;
 
-tryF==ellFvalues1
-
-real(tryF)==real(ellFvalues1);
-
-imag(tryF)==imag(ellFvalues1);
 
 fprintf('The critical value of m for b=0.5 is:\n')
 
