@@ -18,16 +18,8 @@ end
 
 m = -5:0.5:5;
 ellEvalues = [2.8302, 2.7347, 2.6352, 2.5312, 2.4221, 2.3069, 2.1844, 2.053, 1.9101, 1.7518, 1.5708, 1.3506, 1., 0.7163 + 0.336*i, 0.5991 + 0.5991*i, 0.5263 + 0.82*i, 0.4752 + 1.013*i, 0.4367 + 1.186*i, 0.4063 + 1.3439*i, 0.3815 + 1.4897*i, 0.3608 + 1.6257*i];
-
-tryE = nan(size(m));
-
-for ii = 1:length(m)
     
-    [F,E]=elliptic12(m(ii));
-    tryE(ii) = E;
-    
-end
-
+[F,tryE]=elliptic12(m);
 tryE = round(10000*tryE)/10000;
 
 fprintf('Complete E for all m: ')
@@ -199,14 +191,7 @@ end
  
 ellFvalues1 = [0.4325, 0.4374, 0.4426, 0.4481, 0.454, 0.4602, 0.4669, 0.4742, 0.482, 0.4906, 0.5, 0.5105, 0.5222, 0.5357, 0.5514, 0.5702, 0.5938, 0.6258, 0.6774, 0.7877 - 0.0986*i, 0.7422 - 0.1898*i];
 
-tryF = nan(size(m));
-
-
-
-    tryF = elliptic12(b,m);
-    
-
-
+tryF = elliptic12(b,m);
 tryF = round(10000*tryF)/10000;
 
 
@@ -264,20 +249,8 @@ M=(1./sin(b)).^2;
 
 ellEvalues1 = [0.5864, 0.5787, 0.5707, 0.5627, 0.5544, 0.5459, 0.5372, 0.5283, 0.5192, 0.5097, 0.5, 0.4899, 0.4794, 0.4685, 0.457, 0.4448, 0.4319, 0.4177, 0.4018, 0.3815 + 0.0011*i, 0.3608 + 0.0093*i];
 
-tryE = nan(size(m));
-
-
-
-    [F,E]=elliptic12(b,m);
-    tryE=E;
-    
-
-
+[F,tryE]=elliptic12(b,m);
 tryE = round(10000*tryE)/10000;
-
-tryE;
-
-tryE==ellEvalues1
 
 fprintf('The critical value of m for b=0.5 is:\n')
 
@@ -566,7 +539,7 @@ end
 %for m>M correct up until we encounter complex outputs then it just spits
 %out the reals
 
-b=2
+b=2;
 m = -5:0.5:5;
 M = (1./sin(b)).^2;
 
@@ -574,16 +547,7 @@ ellFvalues2 = [1.1354, 1.1688, 1.2063, 1.2489, 1.2979, 1.3554, 1.4244, 1.5095, 1
 tryF = nan(size(m));
 
 tryF = elliptic12(b,m);
-    
 tryF = round(10000*tryF)/10000;
-
-tryF
-
-tryF==ellFvalues2
-
-real(tryF)==real(ellFvalues2);
-
-imag(tryF)==imag(ellFvalues2);
 
 fprintf('The critical value of m for b=2 is:\n')
 
@@ -640,24 +604,8 @@ M = (1./sin(b)).^2;
 
 ellEvalues2 = [3.855, 3.7163, 3.5717, 3.4203, 3.2611, 3.0926, 2.9129, 2.7194, 2.508, 2.2722, 2., 1.6629, 1.0907, 0.7163 + 0.6099*i, 0.5991 + 1.0013*i, 0.5263 + 1.3184*i, 0.4752 + 1.5919*i, 0.4367 + 1.8354*i, 0.4063 + 2.0568*i, 0.3815 + 2.261*i, 0.3608 + 2.4513*i];
 
-tryE = nan(size(m));
-
-for ii = 1:length(m)
-
-    [F,E]=elliptic12(b,m(ii));
-    tryE(ii)=E;
-    
-end
-
+[F,tryE]=elliptic12(b,m);
 tryE = round(10000*tryE)/10000;
-
-tryE;
-
-tryE==ellEvalues2
-
-real(tryE)==real(ellEvalues2);
-
-imag(tryE)==imag(ellEvalues2);
 
 fprintf('The critical value of m for b=2 is:\n')
 
