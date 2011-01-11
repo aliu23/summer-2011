@@ -201,11 +201,11 @@ ellFvalues1 = [0.4325, 0.4374, 0.4426, 0.4481, 0.454, 0.4602, 0.4669, 0.4742, 0.
 
 tryF = nan(size(m));
 
-for ii = 1:length(m)
 
-    tryF(ii) = elliptic12(b,m(ii));
+
+    tryF = elliptic12(b,m);
     
-end
+
 
 tryF = round(10000*tryF)/10000;
 
@@ -256,7 +256,7 @@ else
   end
   
 end
-%% incomplete E (same prob as F) error at m=0
+%% incomplete E (same prob as F)
 
 b=0.5;
 m = -5:0.5:5;
@@ -266,12 +266,12 @@ ellEvalues1 = [0.5864, 0.5787, 0.5707, 0.5627, 0.5544, 0.5459, 0.5372, 0.5283, 0
 
 tryE = nan(size(m));
 
-for ii = 1:length(m)
 
-    [F,E]=elliptic12(b,m(ii));
-    tryE(ii)=E;
+
+    [F,E]=elliptic12(b,m);
+    tryE=E;
     
-end
+
 
 tryE = round(10000*tryE)/10000;
 
@@ -573,15 +573,11 @@ M = (1./sin(b)).^2;
 ellFvalues2 = [1.1354, 1.1688, 1.2063, 1.2489, 1.2979, 1.3554, 1.4244, 1.5095, 1.6192, 1.7697, 2., 2.4444, inf, 1.6566 - 2.0956*i, 1.311 - 1.7707*i, 1.1242 - 1.6035*i, 1.0011 - 1.4903*i, 0.9117 - 1.405*i, 0.8429 - 1.337*i, 0.7877 - 1.2807*i, 0.7422 - 1.2329*i];
 tryF = nan(size(m));
 
-for ii = 1:length(m)
-
-    tryF(ii) = elliptic12(b,m(ii));
+tryF = elliptic12(b,m);
     
-end
-
 tryF = round(10000*tryF)/10000;
 
-tryF;
+tryF
 
 tryF==ellFvalues2
 
@@ -636,7 +632,7 @@ else
   
 end
 
-%% incomplete E b>pi/2 doesnt work for any m<0??
+%% incomplete E b>pi/2 
 
 b=2;
 m = -5:0.5:5;

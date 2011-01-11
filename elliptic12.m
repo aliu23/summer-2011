@@ -15,116 +15,198 @@
 
 function [F,E]=elliptic12(b,m)
 
+if nargin==2
+    if length(b)==1, b=b(ones(size(m))); end
+    if length(m)==1, m=m(ones(size(b))); end
+    if ~isequal(size(b),size(m))
+        error('m and b must be equal sizes')
+    end
+end
+
 %F function
 
  
 if nargin==1  %now b= pi/2
-    
+   
     m=b;
     
-    if m<0 
+    N=size(m);
     
-        
-        F=(1/sqrt(1-m))*ellipke(-m/(1-m)); %in future may want to consider complex inputs
+    F=nan(size(m));
     
-    elseif m>1
-        
-        F=(1/sqrt(m))*(elliptic12i(asin(sqrt(m)),1/m)); 
-        
+    if any(m<0) 
+    
+        mm=m(m<0);
+        F(m<0)=(1./sqrt(1-mm)).*ellipke(-mm./(1-mm)); %in future may want to consider complex inputs
+    
+    end
 
-    else %0<m<=1
-          
-        F=ellipke(m); 
+    if any(m>1)
+        
+        mm=m(m>1);
+        F(m>1)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm)),1./mm)); 
+        
+    end
+
+    if any(m<=1&m>=0) %0<m<=1
+        
+        mm=m(m<=1&m>=0);
+        F(m<=1&m>=0)=ellipke(mm); 
         
     end
     
-elseif nargin==2
+
+elseif nargin==2 %2 inputs of b and m
     
-    if b>pi/2 || b<0
+
+    phase_ind = b>pi/2 | b<0; %When b is out side of the normal range
+    
+    if any(phase_ind)
         
-        phi = mod(b+pi/2,pi)-pi/2;
-        a = round(b/pi);
-        F = 2*a.*elliptic12(m) + sign(phi)*elliptic12(abs(phi),m);
-   
-    elseif m<0 
-    
-        t=asin((sin(b)*sqrt(1-m))/sqrt(1-m*(sin(b))^2)); %t is actually theta
-        F=(1/sqrt(1-m))*elliptic12i(t,-m/(1-m)); 
-    
-    
-    elseif m>1 
+        mm = m(phase_ind);
+        bb = b(phase_ind);
         
-        F=(1/sqrt(m))*(elliptic12i(asin(sqrt(m)*sin(b)),1/m)); %cannot output complex part
+        phi = mod(bb+pi/2,pi)-pi/2;
+        a = round(bb./pi);
+        F(phase_ind) = 2.*a.*elliptic12(mm) + sign(phi).*elliptic12(abs(phi),mm);
+    
+    end
+
+    mneg_ind = m<0 & ~phase_ind; %m<0 and when b IS in normal range
+    
+    if any(mneg_ind)
+        
+        mm=m(mneg_ind);
+        bb=b(mneg_ind);
+    
+        t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2)); %t is actually theta
+        F(mneg_ind)=(1./sqrt(1-mm)).*elliptic12i(t,-mm./(1-mm)); 
+    
+    end
+    
+    mpos_ind = m>1 & ~phase_ind;
+    if any(mpos_ind)
+        
+        mm=m(mpos_ind);
+        bb=b(mpos_ind);
+        
+        F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm)); %cannot output complex part
         disp('complex part may be missing');
-        
-    else  
-          
-        F=elliptic12i(b,m);
-        
-    
     end
-      
-end
+    
+    mreg_ind=m<=1&m>=0 & ~phase_ind;
+    
+    if any(mreg_ind)
+        
+        mm=m(mreg_ind);
+        bb=b(mreg_ind);
+        
+        F(mreg_ind)=elliptic12i(bb,mm);
+        
+    end
 
+end
+      
 
 % E function
 
-
+if nargout>1
 if nargin==1  %now b= pi/2
     
     m=b;
     
-    if m<0
-           
-        [FF,EE]= ellipke(-m/(1-m)); %to define if your using the F output in elliptic12 or the E output
-        E=sqrt(1-m)*EE;
     
-    elseif m>1
+    E=nan(size(m));
+    
+    if any(m<0)
         
-        [FF,EE]=elliptic12i(asin(sqrt(m)),1/m);      
-        E=((1/sqrt(m))-sqrt(m))*FF+sqrt(m)*EE;
-     
-    else
+        mm=m(m<0);
         
-        
-        [FF,E]=ellipke(m);
-        
-        
+        [FF,EE]= ellipke(-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
+        E(m<0)=sqrt(1-mm).*EE;
     end
+    
+    if any(m>1)
+        
+        mm=m(m>1);
+        
+        [FF,EE]=elliptic12i(asin(sqrt(mm)),1./mm);      
+        E(m>1)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
+    end
+    
+    
+    if any(m<=1&m>=0)
+        
+        mm=m(m<=1&m>=0);
+        [FF,E(m<=1&m>=0)]=ellipke(mm);
+        
+    end    
+
     
 elseif nargin==2
    
-    if b>pi/2 || b<0
+   phase_ind = b>pi/2 | b<0;
+   
+    if any(phase_ind)
         
-        phi = mod(b+pi/2,pi)-pi/2;
-        a = round(b/pi);
-        [F1,E1]=elliptic12(m);
-        [FF,EE]=elliptic12(abs(phi),m);
-        E = 2*a.*E1 + sign(phi)*EE;
+        mm = m(phase_ind);
+        bb = b(phase_ind);
         
-   elseif m<0
-        t=asin((sin(b)*sqrt(1-m))/sqrt(1-m*(sin(b))^2));   
-        [FF,EE]= elliptic12(t,-m/(1-m)); %to define if your using the F output in elliptic12 or the E output
-        E=m*(sin(t)*cos(t)/sqrt(1-m*(cos(t))^2))+sqrt(1-m)*EE;
+        phi = mod(bb+pi/2,pi)-pi/2;
+        a = round(bb./pi);
+        [F1,E1]=elliptic12(mm);
+        [FF,EE]=elliptic12(abs(phi),mm);
+        E(phase_ind) = 2*a.*E1 + sign(phi).*EE;
+    end
     
- elseif m>1 
+   mz_ind = m==0 & ~phase_ind;
+    if any(mz_ind)
         
-        [FF,EE]=elliptic12i(asin(sqrt(m)*sin(b)),1/m); %cannot display complex part      
-        E=((1/sqrt(m))-sqrt(m))*FF+sqrt(m)*EE;
+        bb=b(mz_ind);
+        
+        E(mz_ind)=bb;
+    end
+    
+    mneg_ind = m<0 & ~phase_ind;
+    if any(mneg_ind)
+        
+        mm=m(mneg_ind);
+        bb=b(mneg_ind);
+       
+       t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
+       [FF,EE]= elliptic12(t,-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
+       E(mneg_ind)=mm.*(sin(t).*cos(t)./sqrt(1-mm.*(cos(t)).^2))+sqrt(1-mm).*EE;
+    end
+    
+    mpos_ind = m>1 & ~phase_ind;
+    
+    if any(mpos_ind)
+        
+        mm=m(mpos_ind);
+        bb=b(mpos_ind);
+        
+        [FF,EE]=elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm); %cannot display complex part      
+        E(mpos_ind)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
         disp('complex part may be missing');
-     
- else 
+    end
+
+    mreg_ind=m<=1&m>0 & ~phase_ind;
+    
+    if any(mreg_ind)
         
-        
-        [FF,E]=elliptic12i(b,m);
-        
+        mm=m(mreg_ind);
+        bb=b(mreg_ind);
+        [FF,E(mreg_ind)]=elliptic12i(bb,mm); %note the elliptic12i function cannot evaluate at m=0 for E
         
     end
       
-        
 end
+end
+end 
 
-end
+
+
+
 
 
 
