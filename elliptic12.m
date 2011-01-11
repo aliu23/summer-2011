@@ -1,19 +1,22 @@
-% Elliptic 12 computes the First and Second Elliptic integrals for both the
-% complete and incomplete cases. 
-
-%if in the form [F,E]=elliptic12(b,m)
-%outputs F and E integrals with phase angle b where 0<b<pi/2
-
-%For the incomplete Case: 
-%when complex numbers are expected, the complex part will not be outputed
-
-%For complete case the form is [F,E]=elliptic12(m) where b is Pi/2
-%m can take all values here
-%will output the whole answer
-
-
-
 function [F,E]=elliptic12(b,m)
+%ELLIPTIC12 computes the First and Second Elliptic integrals for both the
+% complete and incomplete cases and no restriction on the input arguments. 
+%
+% [F,E]=elliptic12(b,m)
+%   Calculate incomplete elliptic integrals of the first and second kind,
+%   F and E, respectively.
+%    - Phase angle b may be any real or complex number
+%    - Parameter m can be any real number
+%
+% [K,E]=elliptic12(m)
+%   Calculate complete elliptic integrals of the first and second kind,
+%   K and E, respectively.
+%    - Equivalent to  [K,E]=elliptic12(pi/2,m)  but calculated more
+%      efficiently
+%
+% There is a bug in the incomplete case: 
+%   when complex numbers are expected in the output, the complex part will
+%   not be calculated correctly when m>(1/sin(b))^2.
 
 if nargin==2
     if length(b)==1, b=b(ones(size(m))); end
