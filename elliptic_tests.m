@@ -30,6 +30,253 @@ else
   fprintf('some failed\n')
 end
 
+
+%% incomplete F elliptic12i cannot output the imaginary part for m values
+% M and over,, real part ok
+
+ b = 0.5;
+ m = -5:0.5:5;
+ M=(1./sin(b)).^2; %This is the critical value of m where the input b goes from real to complex
+ 
+ellFvalues1 = [0.4325, 0.4374, 0.4426, 0.4481, 0.454, 0.4602, 0.4669, 0.4742, 0.482, 0.4906, 0.5, 0.5105, 0.5222, 0.5357, 0.5514, 0.5702, 0.5938, 0.6258, 0.6774, 0.7877 - 0.0986*i, 0.7422 - 0.1898*i];
+
+tryF = elliptic12(b,m);
+tryF = round(10000*tryF)/10000;
+
+
+fprintf('The critical value of m for b=0.5 is:\n')
+
+M
+
+fprintf('incomplete F(m<=1,0<b<pi/2): ')
+
+if all(tryF(m<=1)==ellFvalues1(m<=1))
+  fprintf('passed\n')
+else
+  
+  if all(real(tryF(m<=1))==real(ellFvalues1(m<=1)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+
+fprintf('Incomplete F(m<M,0<b<pi/2): ')
+
+if all(tryF(m<M)==ellFvalues1(m<M)) 
+  fprintf('passed\n')
+else
+  
+  if all(real(tryF(m<M))==real(ellFvalues1(m<M)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+fprintf('Incomplete F(m>M,0<b<pi/2): ')
+
+if all(tryF(m>M)==ellFvalues1(m>M)) 
+  fprintf('passed\n')
+else
+  
+  if all(real(tryF(m>M))==real(ellFvalues1(m>M)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+%% incomplete E (same prob as F)
+
+b=0.5;
+m = -5:0.5:5;
+M=(1./sin(b)).^2;
+
+ellEvalues1 = [0.5864, 0.5787, 0.5707, 0.5627, 0.5544, 0.5459, 0.5372, 0.5283, 0.5192, 0.5097, 0.5, 0.4899, 0.4794, 0.4685, 0.457, 0.4448, 0.4319, 0.4177, 0.4018, 0.3815 + 0.0011*i, 0.3608 + 0.0093*i];
+
+[F,tryE]=elliptic12(b,m);
+tryE = round(10000*tryE)/10000;
+
+fprintf('The critical value of m for b=0.5 is:\n')
+
+M
+
+fprintf('Incomplete E(m<=1,0<b<pi/2): ')
+
+if all(tryE(m<=1)==ellEvalues1(m<=1)) 
+  fprintf('passed\n')
+  
+elseif all(tryE(m<=1)==ellEvalues1(m<=1)) || all(tryE(m==0)~=ellEvalues1(m==0))
+  fprintf('problem at m=0 otherwise passed\n')
+  
+else
+  
+  if all(real(tryE(m<=1))==real(ellEvalues1(m<=1)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+
+fprintf('Incomplete E(m<M,0<b<pi/2): ')
+
+if all(tryE(m<M)==ellEvalues1(m<M)) 
+  fprintf('passed\n')
+  
+elseif all(tryE(m<M)==ellEvalues1(m<M)) || all(tryE(m==0)~=ellEvalues1(m==0))
+  fprintf('problem at m=0 otherwise passed\n')
+  
+else
+  
+  if all(real(tryE(m<M))==real(ellEvalues1(m<M)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+fprintf('Incomplete E(m>M,0<b<pi/2): ')
+
+if all(tryE(m>M)==ellEvalues1(m>M))
+  fprintf('passed\n')
+else
+  
+  if all(real(tryE(m>M))==real(ellEvalues1(m>M)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end 
+
+
+%% incomplete F b>pi/2 (for all m<M works) 
+%for m>M correct up until we encounter complex outputs then it just spits
+%out the reals
+
+b=2;
+m = -5:0.5:5;
+M = (1./sin(b)).^2;
+
+ellFvalues2 = [1.1354, 1.1688, 1.2063, 1.2489, 1.2979, 1.3554, 1.4244, 1.5095, 1.6192, 1.7697, 2., 2.4444, inf, 1.6566 - 2.0956*i, 1.311 - 1.7707*i, 1.1242 - 1.6035*i, 1.0011 - 1.4903*i, 0.9117 - 1.405*i, 0.8429 - 1.337*i, 0.7877 - 1.2807*i, 0.7422 - 1.2329*i];
+tryF = nan(size(m));
+
+tryF = elliptic12(b,m);
+tryF = round(10000*tryF)/10000;
+
+fprintf('The critical value of m for b=2 is:\n')
+
+M
+
+fprintf('incomplete F(m<=1,b>pi/2): ')
+
+if all(tryF(m<=1)==ellFvalues2(m<=1))
+  fprintf('passed\n')
+else
+  
+  if all(real(tryF(m<=1))==real(ellFvalues2(m<=1)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+
+fprintf('Incomplete F(m<M,b>pi/2): ')
+
+if all(tryF(m<M)==ellFvalues2(m<M)) 
+  fprintf('passed\n')
+else
+  
+  if all(real(tryF(m<M)==real(ellFvalues2(m<M))))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+fprintf('Incomplete F(m>M,b>pi/2): ')
+
+if all(tryF(m>M)==ellFvalues2(m>M)) 
+  fprintf('passed\n')
+else
+  
+  if all(real(tryF(m>M))==real(ellFvalues2(m>M)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+%% incomplete E b>pi/2 
+
+b=2;
+m = -5:0.5:5;
+M = (1./sin(b)).^2;
+
+ellEvalues2 = [3.855, 3.7163, 3.5717, 3.4203, 3.2611, 3.0926, 2.9129, 2.7194, 2.508, 2.2722, 2., 1.6629, 1.0907, 0.7163 + 0.6099*i, 0.5991 + 1.0013*i, 0.5263 + 1.3184*i, 0.4752 + 1.5919*i, 0.4367 + 1.8354*i, 0.4063 + 2.0568*i, 0.3815 + 2.261*i, 0.3608 + 2.4513*i];
+
+[F,tryE]=elliptic12(b,m);
+tryE = round(10000*tryE)/10000;
+
+fprintf('The critical value of m for b=2 is:\n')
+
+M
+
+fprintf('incomplete E(m<=1,b>pi/2): ')
+
+if all(tryE(m<=1)==ellEvalues2(m<=1))
+  fprintf('passed\n')
+else
+  
+  if all(real(tryE(m<=1))==real(ellEvalues2(m<=1)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+
+fprintf('Incomplete E(m<M,b>pi/2): ')
+
+if all(tryE(m<M)==ellEvalues2(m<M)) 
+  fprintf('passed\n')
+else
+  
+  if all(real(tryE(m<M)==real(ellEvalues2(m<M))))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+fprintf('Incomplete E(m>M,b>pi/2): ')
+
+if all(tryE(m>M)==ellEvalues2(m>M)) 
+  fprintf('passed\n')
+else
+  
+  if all(real(tryE(m>M))==real(ellEvalues2(m>M)))
+    fprintf('real components correct, missing complex\n')
+  else
+    fprintf('failed\n')
+  end
+  
+end
+
+
 %% complete pi ,0<n<1, input must be real, elliptic3 cannot have complex inputs
 %we need elliptic3i
 
@@ -182,130 +429,7 @@ else
 end
 
 
-%% incomplete F elliptic12i cannot output the imaginary part for m values
-% M and over,, real part ok
 
- b = 0.5;
- m = -5:0.5:5;
- M=(1./sin(b)).^2; %This is the critical value of m where the input b goes from real to complex
- 
-ellFvalues1 = [0.4325, 0.4374, 0.4426, 0.4481, 0.454, 0.4602, 0.4669, 0.4742, 0.482, 0.4906, 0.5, 0.5105, 0.5222, 0.5357, 0.5514, 0.5702, 0.5938, 0.6258, 0.6774, 0.7877 - 0.0986*i, 0.7422 - 0.1898*i];
-
-tryF = elliptic12(b,m);
-tryF = round(10000*tryF)/10000;
-
-
-fprintf('The critical value of m for b=0.5 is:\n')
-
-M
-
-fprintf('incomplete F(m<=1,0<b<pi/2): ')
-
-if all(tryF(m<=1)==ellFvalues1(m<=1))
-  fprintf('passed\n')
-else
-  
-  if all(real(tryF(m<=1))==real(ellFvalues1(m<=1)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-
-fprintf('Incomplete F(m<M,0<b<pi/2): ')
-
-if all(tryF(m<M)==ellFvalues1(m<M)) 
-  fprintf('passed\n')
-else
-  
-  if all(real(tryF(m<M))==real(ellFvalues1(m<M)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-fprintf('Incomplete F(m>M,0<b<pi/2): ')
-
-if all(tryF(m>M)==ellFvalues1(m>M)) 
-  fprintf('passed\n')
-else
-  
-  if all(real(tryF(m>M))==real(ellFvalues1(m>M)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-%% incomplete E (same prob as F)
-
-b=0.5;
-m = -5:0.5:5;
-M=(1./sin(b)).^2;
-
-ellEvalues1 = [0.5864, 0.5787, 0.5707, 0.5627, 0.5544, 0.5459, 0.5372, 0.5283, 0.5192, 0.5097, 0.5, 0.4899, 0.4794, 0.4685, 0.457, 0.4448, 0.4319, 0.4177, 0.4018, 0.3815 + 0.0011*i, 0.3608 + 0.0093*i];
-
-[F,tryE]=elliptic12(b,m);
-tryE = round(10000*tryE)/10000;
-
-fprintf('The critical value of m for b=0.5 is:\n')
-
-M
-
-fprintf('Incomplete E(m<=1,0<b<pi/2): ')
-
-if all(tryE(m<=1)==ellEvalues1(m<=1)) 
-  fprintf('passed\n')
-  
-elseif all(tryE(m<=1)==ellEvalues1(m<=1)) || all(tryE(m==0)~=ellEvalues1(m==0))
-  fprintf('problem at m=0 otherwise passed\n')
-  
-else
-  
-  if all(real(tryE(m<=1))==real(ellEvalues1(m<=1)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-
-fprintf('Incomplete E(m<M,0<b<pi/2): ')
-
-if all(tryE(m<M)==ellEvalues1(m<M)) 
-  fprintf('passed\n')
-  
-elseif all(tryE(m<M)==ellEvalues1(m<M)) || all(tryE(m==0)~=ellEvalues1(m==0))
-  fprintf('problem at m=0 otherwise passed\n')
-  
-else
-  
-  if all(real(tryE(m<M))==real(ellEvalues1(m<M)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-fprintf('Incomplete E(m>M,0<b<pi/2): ')
-
-if all(tryE(m>M)==ellEvalues1(m>M))
-  fprintf('passed\n')
-else
-  
-  if all(real(tryE(m>M))==real(ellEvalues1(m>M)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end 
 
 %% incomplete Pi 0<n<1 (elliptic 3 cannot imput complex no.)
 
@@ -535,124 +659,7 @@ else
   
 end 
 
-%% incomplete F b>pi/2 (for all m<M works) 
-%for m>M correct up until we encounter complex outputs then it just spits
-%out the reals
 
-b=2;
-m = -5:0.5:5;
-M = (1./sin(b)).^2;
-
-ellFvalues2 = [1.1354, 1.1688, 1.2063, 1.2489, 1.2979, 1.3554, 1.4244, 1.5095, 1.6192, 1.7697, 2., 2.4444, inf, 1.6566 - 2.0956*i, 1.311 - 1.7707*i, 1.1242 - 1.6035*i, 1.0011 - 1.4903*i, 0.9117 - 1.405*i, 0.8429 - 1.337*i, 0.7877 - 1.2807*i, 0.7422 - 1.2329*i];
-tryF = nan(size(m));
-
-tryF = elliptic12(b,m);
-tryF = round(10000*tryF)/10000;
-
-fprintf('The critical value of m for b=2 is:\n')
-
-M
-
-fprintf('incomplete F(m<=1,b>pi/2): ')
-
-if all(tryF(m<=1)==ellFvalues2(m<=1))
-  fprintf('passed\n')
-else
-  
-  if all(real(tryF(m<=1))==real(ellFvalues2(m<=1)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-
-fprintf('Incomplete F(m<M,b>pi/2): ')
-
-if all(tryF(m<M)==ellFvalues2(m<M)) 
-  fprintf('passed\n')
-else
-  
-  if all(real(tryF(m<M)==real(ellFvalues2(m<M))))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-fprintf('Incomplete F(m>M,b>pi/2): ')
-
-if all(tryF(m>M)==ellFvalues2(m>M)) 
-  fprintf('passed\n')
-else
-  
-  if all(real(tryF(m>M))==real(ellFvalues2(m>M)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-%% incomplete E b>pi/2 
-
-b=2;
-m = -5:0.5:5;
-M = (1./sin(b)).^2;
-
-ellEvalues2 = [3.855, 3.7163, 3.5717, 3.4203, 3.2611, 3.0926, 2.9129, 2.7194, 2.508, 2.2722, 2., 1.6629, 1.0907, 0.7163 + 0.6099*i, 0.5991 + 1.0013*i, 0.5263 + 1.3184*i, 0.4752 + 1.5919*i, 0.4367 + 1.8354*i, 0.4063 + 2.0568*i, 0.3815 + 2.261*i, 0.3608 + 2.4513*i];
-
-[F,tryE]=elliptic12(b,m);
-tryE = round(10000*tryE)/10000;
-
-fprintf('The critical value of m for b=2 is:\n')
-
-M
-
-fprintf('incomplete E(m<=1,b>pi/2): ')
-
-if all(tryE(m<=1)==ellEvalues2(m<=1))
-  fprintf('passed\n')
-else
-  
-  if all(real(tryE(m<=1))==real(ellEvalues2(m<=1)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-
-fprintf('Incomplete E(m<M,b>pi/2): ')
-
-if all(tryE(m<M)==ellEvalues2(m<M)) 
-  fprintf('passed\n')
-else
-  
-  if all(real(tryE(m<M)==real(ellEvalues2(m<M))))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
-
-fprintf('Incomplete E(m>M,b>pi/2): ')
-
-if all(tryE(m>M)==ellEvalues2(m>M)) 
-  fprintf('passed\n')
-else
-  
-  if all(real(tryE(m>M))==real(ellEvalues2(m>M)))
-    fprintf('real components correct, missing complex\n')
-  else
-    fprintf('failed\n')
-  end
-  
-end
 
 %% incomplete Pi 0<n<1, b>pi/2 Doesnt work for all m same no elliptic 3i problem
 
