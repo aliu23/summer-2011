@@ -41,63 +41,164 @@ function [P]=elliptic3(b,m,n)
 %   n>1 possible but complex part of solution not shown
 
 
-if nargin==2 || b==pi/2  %now b= pi/2 so its in the form of ellipticP(n,m)
-    
+if nargin==2  %now b= pi/2 so its in the form of ellipticP(m,n)
     
     n=m;
     m=b;
     
-    if m==0
-        
-        P=pi/(2*sqrt(1-n));
-            
-    elseif m<=1 && n<=1
-            
-        P=ellippi(n,m);
-        %P=1/((n-m)*sqrt(1-m))*(-m*ellipke(-m/(1-m))+n*ellippi((n-m)/(1-m),-m/(1-m)));
+    if length(m)==1, m=m(ones(size(n))); end
+    if length(n)==1, n=n(ones(size(m))); end
     
-    elseif m>1 && n<=1 %% this doesnt work as b becomes complex
+    if ~isequal(size(n),size(m))
+        error('m and b must be equal sizes')
+    end
+
+    mz_ind = m==0;
+    
+    if any(mz_ind)
         
-        P=1/sqrt(m)*elliptic3ic(asin(sqrt(m)),1/m,n/m);
+        nn=n(mz_ind);
+        
+        P(mz_ind)=pi./(2.*sqrt(1-nn));
+        
+    end 
+    
+    mlnl_ind = m~=0 & m<=1 & n<=1; % mless than 1 and nless than 1 index
+    
+    if any(mlnl_ind)
+        
+        nn=n(mlnl_ind);
+        mm=m(mlnl_ind);
+        
+        P(mlnl_ind)=ellippi(nn,mm);
+        
+        %P=1/((n-m)*sqrt(1-m))*(-m*ellipke(-m/(1-m))+n*ellippi((n-m)/(1-m),-m/(1-m)));
+        
+    end 
+    
+    mgnl_ind=m>1 & n<=1;
+    
+    if any(mgnl_ind) %% this doesnt work as b becomes complex
+        
+        mm=m(mgnl_ind);
+        nn=n(mgnl_ind);
+        
+        P(mgnl_ind)=1./sqrt(mm).*elliptic3ic(asin(sqrt(mm)),1./mm,nn./mm);
      
-    elseif n>1 && m<=1 %%only gives real
+    end
+    
+    mlng_ind=n>1 & m<=1;
+    
+    if any(mlng_ind) %%only gives real
         
-        P=ellippin(n,m);
+        mm=m(mlng_ind);
+        nn=n(mlng_ind);
+        
+        P(mlng_ind)=ellippin(nn,mm);
+        
         %disp('complex part may be missing')
-        
-    elseif n>1 && m>1
-            
-        error('another function needed')
-            
-    else
-            
-        error('invalid range')
-            
         
     end
     
-    elseif nargin==3
-
-        if m==n
-        [FF,EE]= elliptic12(b,m);
-        P=(1/(1-m))*(EE-((m/sqrt(1-m*(sin(b))^2))*sin(b)*cos(b)));
+    mgng_ind=n>1 & m>1;
+    
+    if any(mgng_ind)
             
-        elseif m>1 && n<1
-        P=1/sqrt(m)*elliptic3ic(asin(sqrt(m)*sin(b)),1/m,n/m); %if phase angle is complex cannot compute
-        
-        elseif m<0 && n<1
-        t=asin((sin(b)*sqrt(1-m))/sqrt(1-m*(sin(b))^2));
-        P=1/((n-m)*sqrt(1-m))*(-m*elliptic12(t,-m/(1-m))+n*elliptic3ic(t,-m/(1-m),(n-m)/(1-m)));
+        error('n and m vectors cannot have 1 component greater than 1')
+            
+    end
+            
+elseif nargin==3
     
-        elseif n<1
-        P=elliptic3ic(b,m,n);
-        
-        else  
-        error('n is not less than 1')
+    isize=max(max(size(b),size(m)),size(n));
     
-        end
+    
+    if length(n)==1, n=n(ones(isize)); end
+    if length(m)==1, m=m(ones(isize)); end
+    if length(b)==1, b=b(ones(isize)); end
+    
+    if ~isequal(size(n),size(m))|| ~isequal(size(n),size(b))
+        
+        error('m and b and n must be equal sizes')
+    end
+    
+    phase_ind = b>pi/2 | b<0;
+    
+    if any(phase_ind)
+       error('b is not in the range of [0,Pi/2]')
+    end
+    
+    M=(1./sin(b)).^2; %critical value which goes from real inputs to complex inputs
+    
+    m_ind= m>M;
+    
+    if any(m_ind)
+        
+        error('one of your m value inputs is greater than the critical value')
+        
+    end
+    
+    mnequal_ind = m==n & ~phase_ind;
+    
+    if any(mnequal_ind)
+        
+        bb=b(mnequal_ind);
+        mm=m(mnequal_ind);
+        nn=n(mnequal_ind);
+        
+        [FF,EE]= elliptic12(bb,mm);
+        
+        P(mnequal_ind)=(1./(1-mm)).*(EE-((mm./sqrt(1-mm.*(sin(bb)).^2)).*sin(bb).*cos(bb)));
+        
+    end
+   
+    mgnl_ind = m>1 & n<1 & ~phase_ind;
+    
+    if any(mgnl_ind)
+        
+        bb=b(mgnl_ind);
+        mm=m(mgnl_ind);
+        nn=n(mgnl_ind);
+        
+        P(mgnl_ind)=1./sqrt(mm).*elliptic3ic(asin(sqrt(mm).*sin(bb)),1./mm,nn./mm);
+        
+    end 
+        
+    mlnl_ind = m<0 & n<1 & ~phase_ind;
+    
+    if any(mlnl_ind)
+        
+        bb=b(mlnl_ind);
+        mm=m(mlnl_ind);
+        nn=n(mlnl_ind);
+        
+        t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
+        
+        P(mlnl_ind)=1./((nn-mm).*sqrt(1-mm)).*(-mm.*elliptic12(t,-mm./(1-mm))+nn.*elliptic3ic(t,-mm./(1-mm),(nn-mm)./(1-mm)));
+    
+    end
+
+    mnormnl_ind=n<1 & ~phase_ind & m>=0 & m<=1; %when m is between [0 1] and n<0
+    
+    if any(mnormnl_ind)
+        
+        bb=b(mnormnl_ind);
+        mm=m(mnormnl_ind);
+        nn=n(mnormnl_ind);
+        
+        P(mnormnl_ind)=elliptic3ic(bb,mm,nn);
+        
+    end
+    
+    ngreat_ind=n>1 & ~phase_ind;
+        
+    if any(ngreat_ind)
+        
+        error('one of your n inputs is not less than 1')
+    
+    end
 end
-    
+  
 end 
 
 function Pi = elliptic3ic(u,m,c)

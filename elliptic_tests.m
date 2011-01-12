@@ -216,7 +216,7 @@ fprintf('\nComplete PI\n-----------\n\n')
 fprintf('Critical value where b input goes from real to complex is M=1\n')
 
 %% complete pi ,0<n<1, input must be real, elliptic3 cannot have complex inputs
-%we need elliptic3i
+%we need elliptic3i prob at m=0
 
 n = 0.5;
 
@@ -225,12 +225,15 @@ ellPIvalues1 = [1.2566, 1.2943, 1.3367, 1.3847, 1.44, 1.5048, 1.5823, 1.6779, 1.
 tryPI = nan(size(m));
 
 for ii = 1:length(m)
-    try
+    try 
         tryPI(ii) = elliptic3(m(ii),n);
     end
 end
-
+   
 tryPI = round(10000*tryPI)/10000;
+
+tryPI==ellPIvalues1
+
 
 fprintf('Complete PI(m<=1,0<n<1): ')
 
