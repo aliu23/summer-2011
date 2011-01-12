@@ -164,7 +164,7 @@ elseif nargin==3
         
     end 
         
-    mlnl_ind = m<0 & n<1 & ~phase_ind;
+    mlnl_ind = m~=n & m<0 & n<1 & ~phase_ind;
     
     if any(mlnl_ind)
         
@@ -179,7 +179,7 @@ elseif nargin==3
     end
 
     mnormnl_ind=n<1 & ~phase_ind & m>=0 & m<=1; %when m is between [0 1] and n<0
-    
+     
     if any(mnormnl_ind)
         
         bb=b(mnormnl_ind);
@@ -190,7 +190,23 @@ elseif nargin==3
         
     end
     
-    ngreat_ind=n>1 & ~phase_ind;
+    ng_ind=n>1 & m<n & ~phase_ind; %case where n>1 but m<n
+    
+    if any(ng_ind)
+        
+        bb=b(ng_ind);
+        mm=m(ng_ind);
+        nn=n(ng_ind);
+        
+        N=mm./nn;
+        P1=sqrt(((nn-1).*(1-mm./nn))); %refer to 17.7.8 in abramowitz
+        D=sqrt(1-mm.*(sin(bb)).^2);
+        
+        P(ng_ind)=-elliptic3(bb,mm,N)+elliptic12(bb,mm)+(1./(2.*P1)).*log((D+P1.*tan(bb)).*(D-P1.*tan(bb)).^-1);
+       
+    end
+    
+    ngreat_ind=n>1 & ~phase_ind & m>n;
         
     if any(ngreat_ind)
         
