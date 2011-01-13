@@ -206,6 +206,93 @@ else
 end
 
 
+%% b < 0
+
+fprintf('\nPhase less than 0:\n\n')
+
+b=-2;
+M = (1./sin(b)).^2;
+disp(['The critical value of m for b=',num2str(b),' is M=',num2str(M)])
+
+%% Incomplete F b<0
+
+ellFvalues3 = [-1.1354, -1.1688, -1.2063, -1.2489, -1.2979, -1.3554, -1.4244, -1.5095, -1.6192, -1.7697, -2., -2.4444, inf, -1.6566 + 2.0956*i, -1.311 + 1.7707*i, -1.1242 + 1.6035*i, -1.0011 + 1.4903*i, -0.9117 + 1.405*i, -0.8429 + 1.337*i, -0.7877 + 1.2807*i, -0.7422 + 1.2329*i];
+
+tryF = nan(size(m));
+
+tryF = elliptic12(b,m);
+tryF = round(10000*tryF)/10000;
+
+tryF;
+tryF==ellFvalues3;
+
+fprintf('incomplete F(m<=1,b<0):')
+
+if all(tryF(m<=1)==ellFvalues3(m<=1))
+  fprintf('passed\n')
+elseif all(real(tryF(m<=1))==real(ellFvalues3(m<=1)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete F(m<M,b<0): ')
+
+if all(tryF(m<M)==ellFvalues3(m<M)) 
+  fprintf('passed\n')
+elseif all(real(tryF(m<M)==real(ellFvalues3(m<M))))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete F(m>M, b<0): ')
+
+if all(tryF(m>M)==ellFvalues3(m>M)) 
+  fprintf('passed\n')
+elseif all(real(tryF(m>M))==real(ellFvalues3(m>M)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+%% Incomplete E b<0
+
+ellEvalues3 = [-3.855, -3.7163, -3.5717, -3.4203, -3.2611, -3.0926, -2.9129, -2.7194, -2.508, -2.2722, -2., -1.6629, -1.0907, -0.7163 - 0.6099*i, -0.5991 - 1.0013*i, -0.5263 - 1.3184*i, -0.4752 - 1.5919*i, -0.4367 - 1.8354*i, -0.4063 - 2.0568*i, -0.3815 - 2.261*i, -0.3608 - 2.4513*i];
+
+[F,tryE]=elliptic12(b,m);
+tryE = round(10000*tryE)/10000;
+
+fprintf('incomplete E(m<=1,b<0): ')
+
+if all(tryE(m<=1)==ellEvalues3(m<=1))
+  fprintf('passed\n')
+elseif all(real(tryE(m<=1))==real(ellEvalues3(m<=1)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete E(m<M,b<0): ')
+
+if all(tryE(m<M)==ellEvalues3(m<M)) 
+  fprintf('passed\n')
+elseif all(real(tryE(m<M)==real(ellEvalues3(m<M))))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete E(m>M,b<0): ')
+
+if all(tryE(m>M)==ellEvalues3(m>M)) 
+  fprintf('passed\n')
+elseif all(real(tryE(m>M))==real(ellEvalues3(m>M)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
 %% Elliptic PI
 
 fprintf('\n\nTests for EllipticPI\n====================\n')
@@ -330,7 +417,7 @@ else
 end
 
 
-%% Incomplete PI b < 1
+%% Incomplete PI b=0.5
 
 
 fprintf('\nIncomplete PI\n-------------\n\n')
@@ -396,7 +483,7 @@ end
 n = 3;
 m = -5:0.5:5;
 b=0.5;
-M = (1./sin(b)).^2
+M = (1./sin(b)).^2;
 
 tryPI = nan(size(m));
 
@@ -577,6 +664,8 @@ end
 
 tryPI = round(10000*tryPI)/10000;
 
+
+
 fprintf('Incomplete PI(m<=1,0<b<pi/2,0<n<1): ')
 
 if all(tryPI(m<=1)==ellPIvalues21(m<=1)) 
@@ -707,4 +796,166 @@ elseif all(real(tryPI(m>M))==real(ellPIvalues23(m>M)))
 else any(m>M);
   fprintf('failed due to a complex b input into elliptic3ic\n')
 end
+
+%% Incomplete PI b > pi/2
+
+fprintf('\nPhase less than 0 :\n\n')
+
+b=-2;
+M = (1./sin(b)).^2;
+disp(['The critical value of m for b=',num2str(b),' is M=',num2str(M)])
+
+%% For n between 0 and 1
+
+n=0.5;
+
+ellPIvalues31 = [-1.5967, -1.6493, -1.7087, -1.7767, -1.8554, -1.9483, -2.0607, -2.2008, -2.3834, -2.6376, -3.0338, -3.8199, inf, -2.0855 + 3.7147*i, -1.5327 + 2.9716*i, -1.2659 + 2.5984*i, -1.1017 + 2.3562*i, -0.9879 + 2.1806*i, -0.9032 + 2.045*i, -0.837 + 1.9357*i, -0.7835 + 1.8449*i];
+
+tryPI = nan(size(m));
+
+for ii = 1:length(m)
+    try
+    tryPI(ii) = elliptic3(b,m(ii),n);
+    end
+end
+
+tryPI = round(10000*tryPI)/10000;
+
+
+
+fprintf('Incomplete PI(m<=1,b<0,0<n<1): ')
+
+if all(tryPI(m<=1)==ellPIvalues31(m<=1)) 
+  fprintf('passed\n')
+elseif all(real(tryPI(m<=1))==real(ellPIvalues31(m<=1)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete PI(m<M,b<0,0<n<1): ')
+
+if all(tryPI(m<M)==ellPIvalues31(m<M)) 
+  fprintf('passed\n')
+  
+elseif all(tryPI(m<M)==ellPIvalues31(m<M)) && all(tryPI(m==0)~=ellPIvalues31(m==0))
+  fprintf('problem at m=0 otherwise passed\n')
+elseif all(real(tryPI(m<M))==real(ellPIvalues31(m<M)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete PI(m>M,b<0,0<n<1): ')
+
+if all(tryPI(m>M)==ellPIvalues31(m>M)) 
+  fprintf('passed\n')
+elseif all(real(tryPI(m>M))==real(ellPIvalues31(m>M)))
+  fprintf('real components correct, missing complex\n')
+else any(m>M);
+  fprintf('failed due to a complex b input into elliptic3ic\n')
+end
+%% For n>1
+
+n = 3;
+
+ellPIvalues32 = [0.4045 - 0.6802*i, 0.4029 - 0.7025*i, 0.4005 - 0.7271*i, 0.3967 - 0.7546*i, 0.3913 - 0.7854*i, 0.3834 - 0.8203*i, 0.3722 - 0.8604*i, 0.356 - 0.9069*i, 0.3321 - 0.9619*i, 0.2958 - 1.0283*i, 0.2374 - 1.1107*i, 0.1328 - 1.2167*i, 0.1125 - 0.2104*i, -0.4289 + 5.3514*i, -0.323 - 0.7898*i, -0.2705 - 0.7251*i, 0.2376 + 0.3295*i, -0.2144 - 0.6531*i, -0.197 - 0.6291*i, -0.1832 - 0.6093*i, -0.1719 - 0.5924*i];
+
+tryPI = nan(size(m));
+
+for ii = 1:length(m)
+    try
+    tryPI(ii) = elliptic3(b,m(ii),n);
+    end
+end
+
+tryPI = round(10000*tryPI)/10000;
+
+tryPI;
+
+tryPI==ellPIvalues32;
+
+fprintf('Incomplete PI(m<=1,b<0,n>1): ')
+
+if all(tryPI(m<=1)==ellPIvalues32(m<=1)) 
+  fprintf('passed\n')
+elseif all(real(tryPI(m<=1))==real(ellPIvalues32(m<=1)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed due to n>1\n')
+end
+
+fprintf('Incomplete PI(m<M,b<0,n>1): ')
+
+if all(tryPI(m<M)==ellPIvalues32(m<M)) 
+  fprintf('passed\n')
+  
+elseif all(tryPI(m<M)==ellPIvalues32(m<M)) && all(tryPI(m==0)~=ellPIvalues32(m==0))
+  fprintf('problem at m=0 otherwise passed\n')
+elseif all(real(tryPI(m<M))==real(ellPIvalues32(m<M)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed due to n>1\n')
+end
+
+fprintf('Incomplete PI(m>M,b<0,n>1): ')
+
+if all(tryPI(m>M)==ellPIvalues32(m>M)) 
+  fprintf('passed\n')
+elseif all(real(tryPI(m>M))==real(ellPIvalues32(m>M)))
+  fprintf('real components correct, missing complex\n')
+else 
+  fprintf('failed due to a complex b input into elliptic3ic as well as n>1\n')
+end
+
+%% For n<0
+
+n = -3;
+
+ellPIvalues33 = [-0.6017, -0.6146, -0.6289, -0.645, -0.6631, -0.6841, -0.7087, -0.7384, -0.7756, -0.8252, -0.8979, -1.0305, inf, -0.8907 + 0.5907*i, -0.7979 + 0.5439*i, -0.7395 + 0.5273*i, -0.6957 + 0.5178*i, -0.6605 + 0.5109*i, -0.6308 + 0.5051*i, -0.6053 + 0.4999*i, -0.583 + 0.4951*i];
+
+tryPI = nan(size(m));
+
+for ii = 1:length(m)
+    try
+    tryPI(ii) = elliptic3(b,m(ii),n);
+    end
+end
+
+tryPI = round(10000*tryPI)/10000;
+
+fprintf('Incomplete PI(m<=1,b<0,n<0): ')
+
+if all(tryPI(m<=1)==ellPIvalues33(m<=1)) 
+  fprintf('passed\n')
+elseif all(real(tryPI(m<=1))==real(ellPIvalues33(m<=1)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete PI(m<M,b<0,n<0): ')
+
+if all(tryPI(m<M)==ellPIvalues33(m<M)) 
+  fprintf('passed\n')
+elseif all(tryPI(m<M)==ellPIvalues33(m<M)) && all(tryPI(m==0)~=ellPIvalues33(m==0))
+  fprintf('problem at m=0 otherwise passed\n')
+elseif all(real(tryPI(m<M))==real(ellPIvalues33(m<M)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
+end
+
+fprintf('Incomplete PI(m>M,b<0,n<0): ')
+
+if all(tryPI(m>M)==ellPIvalues33(m>M)) 
+  fprintf('passed\n')
+elseif all(real(tryPI(m>M))==real(ellPIvalues33(m>M)))
+  fprintf('real components correct, missing complex\n')
+else any(m>M);
+  fprintf('failed due to a complex b input into elliptic3ic\n')
+end
+
+
+
 

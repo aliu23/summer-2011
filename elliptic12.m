@@ -62,9 +62,10 @@ if nargin==1  %now b= pi/2
 elseif nargin==2 %2 inputs of b and m
     
 
-    phase_ind = b>pi/2 | b<0; %When b is out side of the normal range
+    phase_ind = b>pi/2 | b<0; 
+    mone_ind= m==1;
     
-    if any(phase_ind)
+    if any(phase_ind & ~mone_ind)
         
         mm = m(phase_ind);
         bb = b(phase_ind);
@@ -75,6 +76,10 @@ elseif nargin==2 %2 inputs of b and m
     
     end
 
+    if any(mone_ind)
+        F(mone_ind)=inf;
+    end 
+    
     mneg_ind = m<0 & ~phase_ind; %m<0 and when b IS in normal range
     
     if any(mneg_ind)
