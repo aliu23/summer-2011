@@ -436,7 +436,7 @@ if all(tryPI(m>M)==ellPIvalues12(m>M))
 elseif all(real(tryPI(m>M))==real(ellPIvalues12(m>M)))
   fprintf('real components correct, missing complex\n')
 else any(m>M)&& n>1;
-  fprintf('failed due to a complex b input into elliptic3ic aswell as n>1\n')
+  fprintf('failed due to a complex b input into elliptic3ic\n')
 end
 
 
@@ -595,7 +595,7 @@ if all(tryPI(m>M)==ellPIvalues22(m>M))
 elseif all(real(tryPI(m>M))==real(ellPIvalues22(m>M)))
   fprintf('real components correct, missing complex\n')
 else any(m>M)&& n>1;
-  fprintf('failed due to a complex b input into elliptic3ic aswell as n>1\n')
+  fprintf('failed due to a complex b input into elliptic3ic as well as n>1\n')
 end
 
 %% incomplete Pi passes now
