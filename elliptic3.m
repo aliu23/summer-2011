@@ -124,8 +124,16 @@ elseif nargin==3
     
     phase_ind = b>pi/2 | b<0;
     
-    if any(phase_ind)
-       error('b is not in the range of [0,Pi/2]')
+    if any(phase_ind) %& n<1 & n>-1 When b is out side of the normal range n should be between -1 and 1 but works for n<0 anyway
+    %doesnt work for n>1
+        
+        mm = m(phase_ind);
+        bb = b(phase_ind);
+        nn = n(phase_ind); 
+        
+        phi = mod(bb+pi/2,pi)-pi/2;
+        a = round(bb./pi);
+        P(phase_ind) = 2.*a.*elliptic3(mm,nn) + sign(phi).*elliptic3(abs(phi),mm,nn);
     end
     
     M=(1./sin(b)).^2; %critical value which goes from real inputs to complex inputs

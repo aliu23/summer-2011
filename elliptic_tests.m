@@ -500,7 +500,7 @@ b=2;
 M = (1./sin(b)).^2;
 disp(['The critical value of m for b=',num2str(b),' is M=',num2str(M)])
 
-%% incomplete Pi 0<n<1, b>pi/2 Doesnt work for all m same no elliptic 3i problem
+%% incomplete Pi 0<n<1 passes until critical point M
 
 n = 0.5;
 
@@ -564,6 +564,7 @@ end
 
 tryPI = round(10000*tryPI)/10000;
 
+
 fprintf('Incomplete PI(m<=1,b>pi/2,n>1): ')
 
 if all(tryPI(m<=1)==ellPIvalues22(m<=1)) 
@@ -597,7 +598,7 @@ else any(m>M)&& n>1;
   fprintf('failed due to a complex b input into elliptic3ic aswell as n>1\n')
 end
 
-%% incomplete Pi negative n wrong for all m
+%% incomplete Pi passes now
 
 n = -5;
 
