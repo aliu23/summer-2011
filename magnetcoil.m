@@ -1,52 +1,54 @@
-
+function [ F ] = magnetcoil(z,rm,lm,Br,rc,Rc,lc,N,I)
 %MAGNETCOIL Function which evaluates the force between a current carrying
 %coil and a magnet
-%z=magnet length
-%rm=magnet radius
-%lm=magnet length
-%Br=magnetisation
-%rc=inner coil radius
-%Rc=outer coil radius
-%lc=coil length
-%N=coil turns
-%I=coil current
+%
+% Both coil and magnet are cylindrical with the following dimensions:
+%
+%   z = axial displacement between coil/magnet centres (m)
+%
+%  rm = magnet radius (m)
+%  lm = magnet length (m)
+%  Br = magnetisation strength (T)
+%
+%  rc = inner coil radius (m)
+%  Rc = outer coil radius (m)
+%  lc = coil length (m)
+%   N = number of coil turns
+%   I = coil current (A)
+%
+% The force is that acted upon the magnet and the coil is assumed to be
+% wound in the anti-clockwise direction when viewed from the end in the
+% positive axial-direction. (I.e., the coil will attact the magnet.)
 
-function [ F ] = magnetcoil(z,rm,lm,Br,rc,Rc,lc,N,I)
+Q = nan(size(z));
 
-Q=dblquad(@auxcoil,rc,Rc,-lc./2,lc./2); %evaluate the double integral
-
+for ii = 1:length(z)
+  Q(ii)=dblquad(@(rr,zz) auxcoil(z(ii),rr,zz),...
+    rc,Rc,-lc./2,lc./2,1e-6);
+end
+  
 F=(N.*I.*Br./(lc.*(Rc-rc))).*Q;
 
 
-
-    function [F]=auxcoil(r1,z1)
-        
-
-zetap=z+lm./2; %when ei is positve
-
-zetan=z-lm./2; %when ei is negative
-
-m3=2.*rm.*r1;
-
-m2p=sqrt((rm+r1).^2+(zetap-z1).^2);
-
-m2n=sqrt((rm+r1).^2+(zetan-z1).^2);
-
-m1p=(2.*m3)./(m2p.^2);
-
-m1n=(2.*m3)./(m2n.^2);
-
-[Fp,Ep]=elliptic12(m1p);
-
-[Fn,En]=elliptic12(m1n);
-
-fzp = (m2p-(m3./m2p)).*Fp-m2p.*Ep; %positive case of fz
-
-fzn = -((m2n-(m3./m2n)).*Fn-m2n.*En);
-
-F=fzp+fzn;
-
-    end
+  function [F]=auxcoil(z,r1,z1)
+    
+    m3=2.*rm.*r1;
+    
+    m2p=sqrt((rm+r1).^2+(z+lm./2-z1).^2);
+    m2n=sqrt((rm+r1).^2+(z-lm./2-z1).^2);
+    
+    m1p=(2.*m3)./(m2p.^2);
+    m1n=(2.*m3)./(m2n.^2);
+    
+    [Fp,Ep]=elliptic12(m1p);
+    [Fn,En]=elliptic12(m1n);
+    
+    fzp =  (m2p-(m3./m2p)).*Fp-m2p.*Ep;
+    fzn = -(m2n-(m3./m2n)).*Fn-m2n.*En;
+    
+    F=fzp+fzn;
+    
+  end
 
 end
 
