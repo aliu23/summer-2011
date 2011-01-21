@@ -1,10 +1,8 @@
 
 function [F,E,P]=elliptic123(a1,a2,a3)
-
-%ELLIPTIC123 computes the First, Second and third Elliptic integrals for both the
-% complete and incomplete cases and no restriction on the input arguments. 
-%
-% 4 Cases
+%ELLIPTIC123 computes the first, second and third elliptic integrals for
+% both the complete and incomplete cases and no restriction on the input
+% arguments. (Modulo some bugs; see below.)
 %
 % [F,E]=elliptic123(b,m)
 %   Calculates incomplete elliptic integrals of the first and second kind,
@@ -37,30 +35,36 @@ function [F,E,P]=elliptic123(a1,a2,a3)
 % For the elliptic PI case when phase is greater than PI/2 and n>1, Cannot
 % evaluate
 
-if nargout<3 && nargin==1
-    
-    [F,E]=elliptic12x(a1);  % == elliptic12(m) 
-
-elseif nargout<3 && nargin==2
-    
-    [F,E]=elliptic12x(a1,a2); %== elliptic12(b,m)
-    
-elseif nargout==3 && nargin==2
-    
-    [F,E]=elliptic12x(a1);
-    P=elliptic3x(a1,a2);  %== elliptic12(m) and elliptic3(m,n)
-    
-elseif nargout==3 && nargin==3
-    
-    [F,E]=elliptic12x(a1,a2);
-    P=elliptic3x(a1,a2,a3);  %== elliptic12(b,m) and elliptic3(b,m,n)
-    
+if nargout<3
+  
+  if nargin==1
+    [F,E] = elliptic12x(a1);  % == elliptic12(m) 
+  elseif nargin==2
+    [F,E] = elliptic12x(a1,a2); % == elliptic12(b,m)
+  else
+    error('Wrong number of input arguments')
+  end
+  
+elseif nargout==3
+  
+  if nargin==2
+    [F,E] = elliptic12x(a1); % == elliptic12(m)
+    P=elliptic3x(a1,a2);   % == elliptic3(m,n)
+  elseif nargin==3
+    [F,E] = elliptic12x(a1,a2); % == elliptic12(b,m)
+    P=elliptic3x(a1,a2,a3);   % == elliptic3(b,m,n)
+  else
+    error('Wrong number of input arguments')
+  end
+  
+else
+  error('Wrong number of output arguments')
 end 
 
 end
 
 function [F,E]=elliptic12x(b,m)
-%ELLIPTIC12 computes the First and Second Elliptic integrals for both the
+%ELLIPTIC12x computes the first and second Elliptic integrals for both the
 % complete and incomplete cases and no restriction on the input arguments. 
 %
 % [F,E]=elliptic12(b,m)
