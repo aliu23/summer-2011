@@ -280,34 +280,6 @@ end
 
 function [P]=elliptic3x(b,m,n) 
 
-% ELLIPTIC3 evaluates incomplete elliptic integral of the third kind.
-%   Pi = ELLIPTIC3(U,M,C) where U is a phase in radians, 0<M<1 is 
-%   the module and 0<C<1 is a parameter. 
-%
-%   ELLIPTIC3 uses Gauss-Legendre 10 points quadrature template 
-%   described in [3] to determine the value of the Incomplete Elliptic 
-%   Integral of the Third Kind (see [1, 2]).
-%
-%   Pi(u,m,c) = int(1/((1 - c*sin(t)^2)*sqrt(1 - m*sin(t)^2)), t=0..u)
-%
-%   Tables generating code ([1], pp. 625-626):
-%	    [phi,alpha,c] = meshgrid(0:15:90, 0:15:90, 0:0.1:1); 
-%   	Pi = elliptic3(pi/180*phi, sin(pi/180*alpha).^2, c);  % values of integrals
-%  
-%   References:
-%   [1] M. Abramowitz and I.A. Stegun, "Handbook of Mathematical
-%       Functions" Dover Publications", 1965, Ch. 17.7.
-%   [2] D. F. Lawden, "Elliptic Functions and Applications"
-%       Springer-Verlag, vol. 80, 1989.
-%   [3] S. Zhang, J. Jin "Computation of Special Functions" (Wiley, 1996).
-
-%   For support, please reply to 
-%       moiseev[at]sissa.it
-%       Moiseev Igor, 
-%       34106, SISSA, via Beirut n. 2-4,  Trieste, Italy
-
-%   additions to script added 6/01/2011
-
 %   incomplete case
 %   P=elliptic3(b,m,n) where b is the phase angle in the range of 0<b<Pi/2
 %   module m where -inf<m<1 
