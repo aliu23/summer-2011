@@ -1,6 +1,8 @@
-%% Test suite for additions to elliptic12 and elliptic3
+%% Test suite for elliptic123
 
 clc
+
+warning off elliptic123:BadComplex
 
 m = -5:0.5:5;
 
@@ -13,7 +15,7 @@ fprintf('Tests for EllipticF and EllipticE\n=================================\n\
 ellKvalues = [0.9555, 0.981, 1.0095, 1.0416, 1.0783, 1.1209, 1.1714, 1.233, 1.311, 1.4157, 1.5708, 1.8541, inf, 1.6566 - 1.4157*i, 1.311 - 1.311*i, 1.1242 - 1.233*i, 1.0011 - 1.1714*i, 0.9117 - 1.1209*i, 0.8429 - 1.0783*i, 0.7877 - 1.0416*i, 0.7422 - 1.0095*i];
 ellEvalues = [2.8302, 2.7347, 2.6352, 2.5312, 2.4221, 2.3069, 2.1844, 2.053, 1.9101, 1.7518, 1.5708, 1.3506, 1., 0.7163 + 0.336*i, 0.5991 + 0.5991*i, 0.5263 + 0.82*i, 0.4752 + 1.013*i, 0.4367 + 1.186*i, 0.4063 + 1.3439*i, 0.3815 + 1.4897*i, 0.3608 + 1.6257*i];
 
-[tryk tryE] = elliptic12(m);
+[tryk tryE] = elliptic123(m);
 tryk = round(10000*tryk)/10000;
 tryE = round(10000*tryE)/10000;
 
@@ -40,12 +42,12 @@ b=0.5;
 M = (1./sin(b)).^2;
 disp(['The critical value of m for b=',num2str(b),' is M=',num2str(M)])
 
-%% incomplete F elliptic12i cannot output the imaginary part for m values
+%% incomplete F elliptic123i cannot output the imaginary part for m values
 % M and over,, real part ok
  
 ellFvalues1 = [0.4325, 0.4374, 0.4426, 0.4481, 0.454, 0.4602, 0.4669, 0.4742, 0.482, 0.4906, 0.5, 0.5105, 0.5222, 0.5357, 0.5514, 0.5702, 0.5938, 0.6258, 0.6774, 0.7877 - 0.0986*i, 0.7422 - 0.1898*i];
 
-tryF = elliptic12(b,m);
+tryF = elliptic123(b,m);
 tryF = round(10000*tryF)/10000;
 
 fprintf('incomplete F(m<=1,0<b<pi/2): ')
@@ -82,7 +84,7 @@ end
 
 ellEvalues1 = [0.5864, 0.5787, 0.5707, 0.5627, 0.5544, 0.5459, 0.5372, 0.5283, 0.5192, 0.5097, 0.5, 0.4899, 0.4794, 0.4685, 0.457, 0.4448, 0.4319, 0.4177, 0.4018, 0.3815 + 0.0011*i, 0.3608 + 0.0093*i];
 
-[F,tryE]=elliptic12(b,m);
+[F,tryE]=elliptic123(b,m);
 tryE = round(10000*tryE)/10000;
 
 fprintf('Incomplete E(m<=1,0<b<pi/2): ')
@@ -135,7 +137,7 @@ disp(['The critical value of m for b=',num2str(b),' is M=',num2str(M)])
 ellFvalues2 = [1.1354, 1.1688, 1.2063, 1.2489, 1.2979, 1.3554, 1.4244, 1.5095, 1.6192, 1.7697, 2., 2.4444, inf, 1.6566 - 2.0956*i, 1.311 - 1.7707*i, 1.1242 - 1.6035*i, 1.0011 - 1.4903*i, 0.9117 - 1.405*i, 0.8429 - 1.337*i, 0.7877 - 1.2807*i, 0.7422 - 1.2329*i];
 tryF = nan(size(m));
 
-tryF = elliptic12(b,m);
+tryF = elliptic123(b,m);
 tryF = round(10000*tryF)/10000;
 
 fprintf('incomplete F(m<=1,b>pi/2): ')
@@ -172,7 +174,7 @@ end
 
 ellEvalues2 = [3.855, 3.7163, 3.5717, 3.4203, 3.2611, 3.0926, 2.9129, 2.7194, 2.508, 2.2722, 2., 1.6629, 1.0907, 0.7163 + 0.6099*i, 0.5991 + 1.0013*i, 0.5263 + 1.3184*i, 0.4752 + 1.5919*i, 0.4367 + 1.8354*i, 0.4063 + 2.0568*i, 0.3815 + 2.261*i, 0.3608 + 2.4513*i];
 
-[F,tryE]=elliptic12(b,m);
+[F,tryE]=elliptic123(b,m);
 tryE = round(10000*tryE)/10000;
 
 fprintf('incomplete E(m<=1,b>pi/2): ')
@@ -220,7 +222,7 @@ ellFvalues3 = [-1.1354, -1.1688, -1.2063, -1.2489, -1.2979, -1.3554, -1.4244, -1
 
 tryF = nan(size(m));
 
-tryF = elliptic12(b,m);
+tryF = elliptic123(b,m);
 tryF = round(10000*tryF)/10000;
 
 tryF;
@@ -260,7 +262,7 @@ end
 
 ellEvalues3 = [-3.855, -3.7163, -3.5717, -3.4203, -3.2611, -3.0926, -2.9129, -2.7194, -2.508, -2.2722, -2., -1.6629, -1.0907, -0.7163 - 0.6099*i, -0.5991 - 1.0013*i, -0.5263 - 1.3184*i, -0.4752 - 1.5919*i, -0.4367 - 1.8354*i, -0.4063 - 2.0568*i, -0.3815 - 2.261*i, -0.3608 - 2.4513*i];
 
-[F,tryE]=elliptic12(b,m);
+[F,tryE]=elliptic123(b,m);
 tryE = round(10000*tryE)/10000;
 
 fprintf('incomplete E(m<=1,b<0): ')
@@ -313,7 +315,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try 
-        tryPI(ii) = elliptic3(m(ii),n);
+        [F E tryPI(ii)] = elliptic123(m(ii),n);
     end
 end
    
@@ -354,7 +356,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-        tryPI(ii) = elliptic3(m(ii),n);
+        [F E tryPI(ii)] = elliptic123(m(ii),n);
     end
 end
 
@@ -390,7 +392,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(m(ii),n);
+    [F E tryPI(ii)] = elliptic123(m(ii),n);
     end
 end
 
@@ -437,7 +439,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -492,7 +494,7 @@ ellPIvalues_new = [0.6032, 0.6118, 0.6209, 0.6307, 0.6411, 0.6524, 0.6645, 0.677
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -549,7 +551,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -600,7 +602,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -658,7 +660,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -709,7 +711,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -759,7 +761,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -799,7 +801,7 @@ end
 
 %% Incomplete PI b > pi/2
 
-fprintf('\nPhase less than 0 :\n\n')
+fprintf('\nPhase less than 0:\n\n')
 
 b=-2;
 M = (1./sin(b)).^2;
@@ -815,7 +817,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -865,7 +867,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
@@ -918,7 +920,7 @@ tryPI = nan(size(m));
 
 for ii = 1:length(m)
     try
-    tryPI(ii) = elliptic3(b,m(ii),n);
+    [F E tryPI(ii)] = elliptic123(b,m(ii),n);
     end
 end
 
