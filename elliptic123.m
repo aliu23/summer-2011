@@ -260,7 +260,8 @@ elseif nargin==2
         
         [FF,EE]=elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm); %cannot display complex part      
         E(mpos_ind)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
-        % disp('complex part may be missing');
+        warning('elliptic123:BadComplex','Complex part may be missing');
+        
     end
 
     mreg_ind=m<=1&m>0 & ~phase_ind;
@@ -375,7 +376,7 @@ if nargin==2  %now b= pi/2 so its in the form of ellipticP(m,n)
         
         P(mlng_ind)=ellippin(nn,mm);
         
-        %disp('complex part may be missing')
+        warning('elliptic123:MissingComplex','Cannot compute complex part for Elliptic3 with m<=1 and n>1')
         
     end
     
