@@ -24,7 +24,7 @@ Q = nan(size(z));
 
 for ii = 1:length(z)
   Q(ii)=dblquad(@(rr,zz) auxcoil(z(ii),rr,zz),...
-    rc,Rc,-lc./2,lc./2,1e-6);
+    rc,Rc,-lc./2,lc./2);
 end
   
 F=(N.*I.*Br./(lc.*(Rc-rc))).*Q;
@@ -40,16 +40,14 @@ F=(N.*I.*Br./(lc.*(Rc-rc))).*Q;
     m1p=(2.*m3)./(m2p.^2);
     m1n=(2.*m3)./(m2n.^2);
     
-    [Fp,Ep]=elliptic12(m1p);
-    [Fn,En]=elliptic12(m1n);
+    [Fp,Ep]=ellipke(m1p);
+    [Fn,En]=ellipke(m1n);
     
     fzp =  (m2p-(m3./m2p)).*Fp-m2p.*Ep;
-    fzn = -(m2n-(m3./m2n)).*Fn-m2n.*En;
+    fzn = -(m2n-(m3./m2n)).*Fn+m2n.*En;
     
     F=fzp+fzn;
     
   end
 
 end
-
-
