@@ -260,7 +260,7 @@ elseif nargin==2
         
         [FF,EE]=elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm); %cannot display complex part      
         E(mpos_ind)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
-        %warning('elliptic123:BadComplex','Complex part may be missing');
+        warning('elliptic123:BadComplex','Complex part may be missing');
         
     end
 
@@ -291,6 +291,7 @@ function [P]=elliptic3x(b,m,n)
 %   Same conditions as above where b=Pi/2
 %   simpler equations implemented (ellippi and ellippin)
 %   n>1 possible but complex part of solution not shown
+
 
 
 if nargin==2  %now b= pi/2 so its in the form of ellipticP(m,n)
@@ -348,7 +349,7 @@ if nargin==2  %now b= pi/2 so its in the form of ellipticP(m,n)
         
         P(mlng_ind)=ellippin(nn,mm);
         
-        %warning('elliptic123:MissingComplex','Cannot compute complex part for Elliptic3 with m<=1 and n>1')
+        warning('elliptic123:MissingComplex','Cannot compute complex part for Elliptic3 with m<=1 and n>1')
         
     end
     
@@ -361,6 +362,7 @@ if nargin==2  %now b= pi/2 so its in the form of ellipticP(m,n)
     end
             
 elseif nargin==3
+    
     
     isize=max(max(size(b),size(m)),size(n));
     
@@ -377,7 +379,59 @@ elseif nargin==3
     phase_ind = b>pi/2 | b<0;
     mone_ind= m==1;
     
-    if any(phase_ind & ~mone_ind) %& n<1 & n>-1 When b is out side of the normal range n should be between -1 and 1 but works for n<0 anyway
+    phasen_ind=phase_ind & n>1;
+    phasenm_ind=phasen_ind & mone_ind; 
+    
+    if any(phasen_ind)
+        
+        mm = m(phasen_ind);
+        bb = b(phasen_ind);
+        nn = n(phasen_ind);
+   
+    
+        if any(b>pi/2 & b<pi) 
+            
+            cc=bb-pi/2;
+            
+            P(phasen_ind)=conj(-elliptic3x(pi/2-cc,mm,nn));
+        
+        elseif any(b>pi)
+            
+            %a=round(bb./pi);
+            
+            P(phasen_ind)=conj(elliptic3x(bb-pi,mm,nn)); 
+        
+        elseif any(b<-pi/2 & b>-pi)
+            
+            cc=-pi/2-bb;
+            
+            P(phasen_ind)=conj(-elliptic3x(-pi/2+cc,mm,nn));
+            
+        elseif any(b<pi)
+            
+            P(phasen_ind)=conj(elliptic3x(bb+pi,mm,nn));
+        end
+        
+    end
+
+        %if any(phasenm_ind)
+            
+         %P(phasenm_ind)=-elliptic3x(bb,mm,nn);
+
+        
+        %end 
+         %if any(phasenm_ind)
+             
+             %disp('fff')
+             %mm = m(phasenm_ind);
+             %bb = b(phasenm_ind);
+             %nn = n(phasenm_ind);
+             
+             %P(phasenm_ind)=(1./(1-nn)).*(log(tan(bb)+sec(bb))-0.5.*sqrt(nn).*log(1+sqrt(nn).*sin(bb))./(1-sqrt(nn).*sin(bb)));
+        
+         %end
+         
+    if any(phase_ind & ~mone_ind & n<1) %& n<1 & n>-1 When b is out side of the normal range n should be between -1 and 1 but works for n<0 anyway
     %doesnt work for n>1
         
         mm = m(phase_ind);
@@ -389,7 +443,7 @@ elseif nargin==3
         P(phase_ind) = 2.*a.*elliptic3x(mm,nn) + sign(phi).*elliptic3x(abs(phi),mm,nn);
     end
     
-    if any(phase_ind & mone_ind)
+    if any(phase_ind & mone_ind & ~phasen_ind)
         
         P(mone_ind)=inf;
     end 
@@ -444,7 +498,7 @@ elseif nargin==3
     
     end
 
-    mnormnl_ind=n<1 & ~phase_ind & m>=0 & m<=1; %when m is between [0 1] and n<0
+    mnormnl_ind=n<1 & ~phase_ind & m>=0 & m<=1; %when m is between [0 1] and n<1
      
     if any(mnormnl_ind)
         
@@ -452,6 +506,7 @@ elseif nargin==3
         mm=m(mnormnl_ind);
         nn=n(mnormnl_ind);
         
+        %P(mnormnl_ind)=(1./(1-nn)).*(log(tan(bb)+sec(bb))-0.5.*sqrt(nn).*log(1+sqrt(nn).*sin(bb))./((1-sqrt(nn).*sin(bb))));
         P(mnormnl_ind)=elliptic3ic(bb,mm,nn);
         
     end
@@ -468,6 +523,7 @@ elseif nargin==3
         P1=sqrt(((nn-1).*(1-mm./nn))); %refer to 17.7.8 in abramowitz
         D=sqrt(1-mm.*(sin(bb)).^2);
         
+        %P(ng_ind)=(1./(1-nn)).*(log(tan(bb)+sec(bb))-0.5.*sqrt(nn).*log(1+sqrt(nn).*sin(bb))./((1-sqrt(nn).*sin(bb))));
         P(ng_ind)=-elliptic3x(bb,mm,N)+elliptic12x(bb,mm)+(1./(2.*P1)).*log((D+P1.*tan(bb)).*(D-P1.*tan(bb)).^-1);
        
     end
@@ -479,9 +535,11 @@ elseif nargin==3
         error('one of your n inputs is not less than 1')
     
     end
-end
+
   
-end 
+end
+
+end
 
 function [Fi,Ei,Zi] = elliptic12i(u,m,tol)
 

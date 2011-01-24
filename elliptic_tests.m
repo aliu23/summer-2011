@@ -4,6 +4,8 @@ clc
 
 warning off elliptic123:BadComplex
 
+warning off elliptic123:MissingComplex
+
 m = -5:0.5:5;
 
 %% Elliptic F and E
@@ -701,7 +703,9 @@ else any(m>M);
   fprintf('failed due to a complex b input into elliptic3ic\n')
 end
 
-%% incomplete Pi n>1, b>pi/2 cannot do n>1
+%% incomplete Pi n>1, b>pi/2  needs a warning for when m=1 and when m>M
+%otherwise should be ok even spitting out imaginarys
+%make another test for when m=1 and when m<1
 
 n = 5;
   
@@ -717,12 +721,13 @@ end
 
 tryPI = round(10000*tryPI)/10000;
 
+tryPI
 
 fprintf('Incomplete PI(m<=1,b>pi/2,n>1): ')
 
 if all(tryPI(m<=1)==ellPIvalues22(m<=1)) 
   fprintf('passed\n')
-elseif all(real(tryPI(m<=1))==real(ellPIvalues12(m<=1)))
+elseif all(real(tryPI(m<=1))==real(ellPIvalues22(m<=1)))
   fprintf('real components correct, missing complex\n')
 else
   fprintf('failed due to n>1\n')
@@ -748,7 +753,7 @@ if all(tryPI(m>M)==ellPIvalues22(m>M))
 elseif all(real(tryPI(m>M))==real(ellPIvalues22(m>M)))
   fprintf('real components correct, missing complex\n')
 else any(m>M)&& n>1;
-  fprintf('failed due to a complex b input into elliptic3ic as well as n>1\n')
+  fprintf('failed due to a complex b input\n')
 end
 
 %% incomplete Pi passes now
@@ -799,7 +804,7 @@ else any(m>M);
   fprintf('failed due to a complex b input into elliptic3ic\n')
 end
 
-%% Incomplete PI b > pi/2
+%% Incomplete PI b < 0
 
 fprintf('\nPhase less than 0:\n\n')
 
@@ -907,7 +912,7 @@ if all(tryPI(m>M)==ellPIvalues32(m>M))
 elseif all(real(tryPI(m>M))==real(ellPIvalues32(m>M)))
   fprintf('real components correct, missing complex\n')
 else 
-  fprintf('failed due to a complex b input into elliptic3ic as well as n>1\n')
+  fprintf('failed due to a complex b\n')
 end
 
 %% For n<0
