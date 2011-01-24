@@ -137,7 +137,7 @@ elseif nargin==2 %2 inputs of b and m
         
         phi = mod(bb+pi/2,pi)-pi/2;
         a = round(bb./pi);
-        F(phase_ind) = 2.*a.*elliptic12(mm) + sign(phi).*elliptic12(abs(phi),mm);
+        F(phase_ind) = 2.*a.*elliptic12x(mm) + sign(phi).*elliptic12x(abs(phi),mm);
     
     end
 
@@ -227,8 +227,8 @@ elseif nargin==2
         
         phi = mod(bb+pi/2,pi)-pi/2;
         a = round(bb./pi);
-        [F1,E1]=elliptic12(mm);
-        [FF,EE]=elliptic12(abs(phi),mm);
+        [F1,E1]=elliptic12x(mm);
+        [FF,EE]=elliptic12x(abs(phi),mm);
         E(phase_ind) = 2*a.*E1 + sign(phi).*EE;
     end
     
@@ -260,7 +260,7 @@ elseif nargin==2
         
         [FF,EE]=elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm); %cannot display complex part      
         E(mpos_ind)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
-        warning('elliptic123:BadComplex','Complex part may be missing');
+        %warning('elliptic123:BadComplex','Complex part may be missing');
         
     end
 
@@ -348,7 +348,7 @@ if nargin==2  %now b= pi/2 so its in the form of ellipticP(m,n)
         
         P(mlng_ind)=ellippin(nn,mm);
         
-        warning('elliptic123:MissingComplex','Cannot compute complex part for Elliptic3 with m<=1 and n>1')
+        %warning('elliptic123:MissingComplex','Cannot compute complex part for Elliptic3 with m<=1 and n>1')
         
     end
     
@@ -386,7 +386,7 @@ elseif nargin==3
         
         phi = mod(bb+pi/2,pi)-pi/2;
         a = round(bb./pi);
-        P(phase_ind) = 2.*a.*elliptic3(mm,nn) + sign(phi).*elliptic3(abs(phi),mm,nn);
+        P(phase_ind) = 2.*a.*elliptic3x(mm,nn) + sign(phi).*elliptic3x(abs(phi),mm,nn);
     end
     
     if any(phase_ind & mone_ind)
@@ -412,7 +412,7 @@ elseif nargin==3
         mm=m(mnequal_ind);
         nn=n(mnequal_ind);
         
-        [FF,EE]= elliptic12(bb,mm);
+        [FF,EE]= elliptic12x(bb,mm);
         
         P(mnequal_ind)=(1./(1-mm)).*(EE-((mm./sqrt(1-mm.*(sin(bb)).^2)).*sin(bb).*cos(bb)));
         
@@ -440,7 +440,7 @@ elseif nargin==3
         
         t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
         
-        P(mlnl_ind)=1./((nn-mm).*sqrt(1-mm)).*(-mm.*elliptic12(t,-mm./(1-mm))+nn.*elliptic3ic(t,-mm./(1-mm),(nn-mm)./(1-mm)));
+        P(mlnl_ind)=1./((nn-mm).*sqrt(1-mm)).*(-mm.*elliptic12x(t,-mm./(1-mm))+nn.*elliptic3ic(t,-mm./(1-mm),(nn-mm)./(1-mm)));
     
     end
 
@@ -468,7 +468,7 @@ elseif nargin==3
         P1=sqrt(((nn-1).*(1-mm./nn))); %refer to 17.7.8 in abramowitz
         D=sqrt(1-mm.*(sin(bb)).^2);
         
-        P(ng_ind)=-elliptic3(bb,mm,N)+elliptic12(bb,mm)+(1./(2.*P1)).*log((D+P1.*tan(bb)).*(D-P1.*tan(bb)).^-1);
+        P(ng_ind)=-elliptic3x(bb,mm,N)+elliptic12x(bb,mm)+(1./(2.*P1)).*log((D+P1.*tan(bb)).*(D-P1.*tan(bb)).^-1);
        
     end
     
