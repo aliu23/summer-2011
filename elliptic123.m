@@ -247,7 +247,7 @@ elseif nargin==2
         bb=b(mneg_ind);
        
        t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
-       [FF,EE]= elliptic12(t,-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
+       [FF,EE]= elliptic12i(t,-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
        E(mneg_ind)=mm.*(sin(t).*cos(t)./sqrt(1-mm.*(cos(t)).^2))+sqrt(1-mm).*EE;
     end
     

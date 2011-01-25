@@ -721,12 +721,16 @@ end
 
 tryPI = round(10000*tryPI)/10000;
 
-tryPI
+tryPI;
 
 fprintf('Incomplete PI(m<=1,b>pi/2,n>1): ')
 
 if all(tryPI(m<=1)==ellPIvalues22(m<=1)) 
   fprintf('passed\n')
+  
+elseif all(tryPI(m<1)==ellPIvalues22(m<1))&& all(tryPI(m==1)~=ellPIvalues22(m==1))
+    fprintf('problem at m=1 otherwised passed\n')
+    
 elseif all(real(tryPI(m<=1))==real(ellPIvalues22(m<=1)))
   fprintf('real components correct, missing complex\n')
 else
@@ -738,8 +742,9 @@ fprintf('Incomplete PI(m<M, b>pi/2,n>1): ')
 if all(tryPI(m<M)==ellPIvalues22(m<M)) 
   fprintf('passed\n')
   
-elseif all(tryPI(m<M)==ellPIvalues22(m<M)) && all(tryPI(m==0)~=ellPIvalues22(m==0))
-  fprintf('problem at m=0 otherwise passed\n')
+elseif all(tryPI(m<M)==ellPIvalues22(m<M)) && all(tryPI(m==1)~=ellPIvalues22(m==1))
+    fprintf('problem at m=1 otherwised passed')
+    
 elseif all(real(tryPI(m<M))==real(ellPIvalues12(m<M)))
   fprintf('real components correct, missing complex\n')
 else
@@ -886,6 +891,10 @@ fprintf('Incomplete PI(m<=1,b<0,n>1): ')
 
 if all(tryPI(m<=1)==ellPIvalues32(m<=1)) 
   fprintf('passed\n')
+  
+elseif all(tryPI(m<1)==ellPIvalues32(m<1))&& all(tryPI(m==1)~=ellPIvalues32(m==1))
+    fprintf('problem at m=1 otherwised passed\n')
+    
 elseif all(real(tryPI(m<=1))==real(ellPIvalues32(m<=1)))
   fprintf('real components correct, missing complex\n')
 else
@@ -897,8 +906,9 @@ fprintf('Incomplete PI(m<M,b<0,n>1): ')
 if all(tryPI(m<M)==ellPIvalues32(m<M)) 
   fprintf('passed\n')
   
-elseif all(tryPI(m<M)==ellPIvalues32(m<M)) && all(tryPI(m==0)~=ellPIvalues32(m==0))
-  fprintf('problem at m=0 otherwise passed\n')
+elseif all(tryPI(m<M)==ellPIvalues32(m<M))&& all(tryPI(m==1)~=ellPIvalues32(m==1))
+    fprintf('problem at m=1 otherwised passed\n')
+    
 elseif all(real(tryPI(m<M))==real(ellPIvalues32(m<M)))
   fprintf('real components correct, missing complex\n')
 else
