@@ -38,7 +38,7 @@ function [F,E,P]=elliptic123(a1,a2,a3)
 if nargout<3
   
   if nargin==1
-    [F,E] = elliptic12x(a1);  % == elliptic12(m) 
+    [F,E] = elliptic12c(a1);  % == elliptic12(m) 
   elseif nargin==2
     [F,E] = elliptic12x(a1,a2); % == elliptic12(b,m)
   else
@@ -48,7 +48,7 @@ if nargout<3
 elseif nargout==3
   
   if nargin==2
-    [F,E] = elliptic12x(a1); % == elliptic12(m)
+    [F,E] = elliptic12c(a1); % == elliptic12(m)
     P=elliptic3x(a1,a2);   % == elliptic3(m,n)
   elseif nargin==3
     [F,E] = elliptic12x(a1,a2); % == elliptic12(b,m)
@@ -63,9 +63,62 @@ end
 
 end
 
+function [F,E]=elliptic12c(m)
+%ELLIPTIC12c computes the first and second Elliptic integrals for the
+% complete cases and no restriction on the input arguments. 
+%
+% [K,E]=elliptic12(m)
+%   Calculate complete elliptic integrals of the first and second kind,
+%   K and E, respectively.
+%    - Equivalent to  [K,E]=elliptic12(pi/2,m)  but calculated more
+%      efficiently
+
+N=size(m);
+F=nan(size(m));
+
+if any(m<0)
+  mm=m(m<0);
+  F(m<0)=(1./sqrt(1-mm)).*ellipke(-mm./(1-mm));
+end
+
+if any(m>1)
+  mm=m(m>1);
+  F(m>1)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm)),1./mm));
+end
+
+if any(m<=1&m>=0) % 0<m<=1
+  mm=m(m<=1&m>=0);
+  F(m<=1&m>=0)=ellipke(mm);
+end
+
+
+if nargout>1
+    E=nan(size(m));
+    
+    if any(m<0)
+        mm=m(m<0);
+        [FF,EE]= ellipke(-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
+        E(m<0)=sqrt(1-mm).*EE;
+    end
+    
+    if any(m>1)
+        mm=m(m>1);
+        [FF,EE]=elliptic12i(asin(sqrt(mm)),1./mm);      
+        E(m>1)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
+    end
+    
+    if any(m<=1&m>=0)
+        mm=m(m<=1&m>=0);
+        [FF,E(m<=1&m>=0)]=ellipke(mm);
+    end
+end
+
+end
+
+
 function [F,E]=elliptic12x(b,m)
-%ELLIPTIC12x computes the first and second Elliptic integrals for both the
-% complete and incomplete cases and no restriction on the input arguments. 
+%ELLIPTIC12x computes the first and second Elliptic integrals for the
+% incomplete cases and no restriction on the input arguments. 
 %
 % [F,E]=elliptic12(b,m)
 %   Calculate incomplete elliptic integrals of the first and second kind,
@@ -73,188 +126,101 @@ function [F,E]=elliptic12x(b,m)
 %    - Phase angle b may be any real or complex number
 %    - Parameter m can be any real number
 %
-% [K,E]=elliptic12(m)
-%   Calculate complete elliptic integrals of the first and second kind,
-%   K and E, respectively.
-%    - Equivalent to  [K,E]=elliptic12(pi/2,m)  but calculated more
-%      efficiently
-%
-% There is a bug in the incomplete case: 
+% There is a bug: (!) 
 %   when complex numbers are expected in the output, the complex part will
 %   not be calculated correctly when m>(1/sin(b))^2.
 
-if nargin==2
-    if length(b)==1, b=b(ones(size(m))); end
-    if length(m)==1, m=m(ones(size(b))); end
-    if ~isequal(size(b),size(m))
-        error('m and b must be equal sizes')
-    end
+
+if length(b)==1, b=b(ones(size(m))); end
+if length(m)==1, m=m(ones(size(b))); end
+if ~isequal(size(b),size(m))
+  error('m and b must be equal sizes')
 end
 
-%F function
+phase_ind = b>pi/2 | b<0;
+mone_ind= m==1;
 
- 
-if nargin==1  %now b= pi/2
-   
-    m=b;
-    
-    N=size(m);
-    
-    F=nan(size(m));
-    
-    if any(m<0) 
-    
-        mm=m(m<0);
-        F(m<0)=(1./sqrt(1-mm)).*ellipke(-mm./(1-mm)); %in future may want to consider complex inputs
-    
-    end
-
-    if any(m>1)
-        
-        mm=m(m>1);
-        F(m>1)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm)),1./mm)); 
-        
-    end
-
-    if any(m<=1&m>=0) %0<m<=1
-        
-        mm=m(m<=1&m>=0);
-        F(m<=1&m>=0)=ellipke(mm); 
-        
-    end
-    
-
-elseif nargin==2 %2 inputs of b and m
-    
-
-    phase_ind = b>pi/2 | b<0; 
-    mone_ind= m==1;
-    
-    if any(phase_ind & ~mone_ind)
-        
-        mm = m(phase_ind);
-        bb = b(phase_ind);
-        
-        phi = mod(bb+pi/2,pi)-pi/2;
-        a = round(bb./pi);
-        F(phase_ind) = 2.*a.*elliptic12x(mm) + sign(phi).*elliptic12x(abs(phi),mm);
-    
-    end
-
-    if any(mone_ind)
-        F(mone_ind)=inf;
-    end 
-    
-    mneg_ind = m<0 & ~phase_ind; %m<0 and when b IS in normal range
-    
-    if any(mneg_ind)
-        
-        mm=m(mneg_ind);
-        bb=b(mneg_ind);
-    
-        t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2)); %t is actually theta
-        F(mneg_ind)=(1./sqrt(1-mm)).*elliptic12i(t,-mm./(1-mm)); 
-    
-    end
-    
-    mpos_ind = m>1 & ~phase_ind;
-    if any(mpos_ind)
-        
-        mm=m(mpos_ind);
-        bb=b(mpos_ind);
-        
-        F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm)); %cannot output complex part
-        % disp('complex part may be missing');
-    end
-    
-    mreg_ind=m<=1&m>=0 & ~phase_ind;
-    
-    if any(mreg_ind)
-        
-        mm=m(mreg_ind);
-        bb=b(mreg_ind);
-        
-        F(mreg_ind)=elliptic12i(bb,mm);
-        
-    end
-
+if any(phase_ind & ~mone_ind)
+  
+  mm = m(phase_ind);
+  bb = b(phase_ind);
+  
+  phi = mod(bb+pi/2,pi)-pi/2;
+  a = round(bb./pi);
+  F(phase_ind) = 2.*a.*elliptic12c(mm) + sign(phi).*elliptic12x(abs(phi),mm);
+  
 end
-      
 
-% E function
+if any(mone_ind)
+  F(mone_ind)=inf;
+end
+
+mneg_ind = m<0 & ~phase_ind; %m<0 and when b IS in normal range
+
+if any(mneg_ind)
+  
+  mm=m(mneg_ind);
+  bb=b(mneg_ind);
+  
+  t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2)); %t is actually theta
+  F(mneg_ind)=(1./sqrt(1-mm)).*elliptic12i(t,-mm./(1-mm));
+  
+end
+
+mpos_ind = m>1 & ~phase_ind;
+if any(mpos_ind)
+  
+  mm=m(mpos_ind);
+  bb=b(mpos_ind);
+  
+  F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm)); %cannot output complex part
+  % disp('complex part may be missing');
+end
+
+mreg_ind=m<=1&m>=0 & ~phase_ind;
+
+if any(mreg_ind)
+  
+  mm=m(mreg_ind);
+  bb=b(mreg_ind);
+  
+  F(mreg_ind)=elliptic12i(bb,mm);
+  
+end
+
 
 if nargout>1
-if nargin==1  %now b= pi/2
-    
-    m=b;
-    
-    
-    E=nan(size(m));
-    
-    if any(m<0)
-        
-        mm=m(m<0);
-        
-        [FF,EE]= ellipke(-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
-        E(m<0)=sqrt(1-mm).*EE;
-    end
-    
-    if any(m>1)
-        
-        mm=m(m>1);
-        
-        [FF,EE]=elliptic12i(asin(sqrt(mm)),1./mm);      
-        E(m>1)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
-    end
-    
-    
-    if any(m<=1&m>=0)
-        
-        mm=m(m<=1&m>=0);
-        [FF,E(m<=1&m>=0)]=ellipke(mm);
-        
-    end    
-
-    
-elseif nargin==2
    
-   phase_ind = b>pi/2 | b<0;
-   
+    phase_ind = b>pi/2 | b<0;
     if any(phase_ind)
-        
         mm = m(phase_ind);
         bb = b(phase_ind);
         
         phi = mod(bb+pi/2,pi)-pi/2;
         a = round(bb./pi);
-        [F1,E1]=elliptic12x(mm);
+        [F1,E1]=elliptic12c(mm);
         [FF,EE]=elliptic12x(abs(phi),mm);
         E(phase_ind) = 2*a.*E1 + sign(phi).*EE;
     end
     
-   mz_ind = m==0 & ~phase_ind;
+    mz_ind = m==0 & ~phase_ind;
     if any(mz_ind)
-        
         bb=b(mz_ind);
-        
         E(mz_ind)=bb;
     end
     
     mneg_ind = m<0 & ~phase_ind;
     if any(mneg_ind)
-        
         mm=m(mneg_ind);
         bb=b(mneg_ind);
        
-       t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
-       [FF,EE]= elliptic12i(t,-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
-       E(mneg_ind)=mm.*(sin(t).*cos(t)./sqrt(1-mm.*(cos(t)).^2))+sqrt(1-mm).*EE;
+        t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
+        [FF,EE]= elliptic12i(t,-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
+        E(mneg_ind)=mm.*(sin(t).*cos(t)./sqrt(1-mm.*(cos(t)).^2))+sqrt(1-mm).*EE;
     end
     
     mpos_ind = m>1 & ~phase_ind;
-    
     if any(mpos_ind)
-        
         mm=m(mpos_ind);
         bb=b(mpos_ind);
         
@@ -265,17 +231,14 @@ elseif nargin==2
     end
 
     mreg_ind=m<=1&m>0 & ~phase_ind;
-    
     if any(mreg_ind)
-        
         mm=m(mreg_ind);
         bb=b(mreg_ind);
         [FF,E(mreg_ind)]=elliptic12i(bb,mm); %note the elliptic12i function cannot evaluate at m=0 for E
-        
     end
       
 end
-end
+
 end
 
 function [P]=elliptic3x(b,m,n) 
@@ -884,6 +847,8 @@ end
 
 end
 
+
+
 function PI = ellippi(n,m)
 
 % Complete elliptic integrals calculated with the arithmetric-geometric mean
@@ -938,6 +903,8 @@ if ~isempty(im)
 end
 
 end
+
+
 
 function PI = ellippin(n,m)
 
