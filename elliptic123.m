@@ -809,41 +809,55 @@ end
 
 
 function PI = ellippi(n,m)
-% ELLIPPI(n,m)
+
 % Complete elliptic integrals calculated with the arithmetric-geometric mean
 % algorithms contained here: http://dlmf.nist.gov/19.8
 %
 % Valid for n <= 1 and m <= 1
 
+
 a0 = 1;
 g0 = sqrt(1-m);
+s0 = m;
+nn = 0;
+
 p0 = sqrt(1-n);
 Q0 = 1;
 QQ = Q0;
 
-Q1 = ones(size(m));
+w1 = ones(size(m));
 
-while max(Q1(:)) > eps
-  
-  a1 = (a0+g0)/2;
-  g1 = sqrt(a0.*g0);
-  
-  rr = p0.^2+a0.*g0;
-  p1 = rr./(2.*p0);
-  Q1 = 0.5*Q0.*(p0.^2-a0.*g0)./rr;
-  QQ = QQ+Q1;
-  
-  a0 = a1;
-  g0 = g1;
-  Q0 = Q1;
-  p0 = p1;
-  
+while max(w1(:)) > eps % assume ellip2 converges slower than ellip3
+
+ % for Elliptic I
+ a1 = (a0+g0)/2;
+ g1 = sqrt(a0.*g0);
+
+ % for Elliptic II
+ nn = nn + 1;
+ c1 = (a0-g0)/2;
+ w1 = 2^nn*c1.^2;
+ s0 = s0 + w1;
+
+ % for Elliptic III
+ rr = p0.^2+a0.*g0;
+ p1 = rr./(2.*p0);
+ Q1 = 0.5*Q0.*(p0.^2-a0.*g0)./rr;
+ QQ = QQ+Q1;
+
+ a0 = a1;
+ g0 = g1;
+ Q0 = Q1;
+ p0 = p1;
+
 end
 
 PI = pi./(4.*a1).*(2+n./(1-n).*QQ);
 
 im = find(m == 1);
 if ~isempty(im)
+ k(im) = inf;
+ e(im) = ones(length(im),1);
  PI(im) = inf;
 end
 
@@ -852,7 +866,7 @@ end
 
 
 function PI = ellippin(n,m)
-% ELLIPPIN(n,m)
+
 % Complete elliptic integrals calculated with the arithmetric-geometric mean
 % algorithms contained here: http://dlmf.nist.gov/19.8
 %
@@ -861,33 +875,46 @@ function PI = ellippin(n,m)
 
 a0 = 1;
 g0 = sqrt(1-m);
+s0 = m;
+nn = 0;
+
 p0 = sqrt(1-(m/n));
 Q0 = 1;
 QQ = Q0;
 
-Q1 = ones(size(m));
+w1 = ones(size(m));
 
-while max(Q1(:)) > eps
-  
-  a1 = (a0+g0)/2;
-  g1 = sqrt(a0.*g0);
-  
-  rr = p0.^2+a0.*g0;
-  p1 = rr./(2.*p0);
-  Q1 = 0.5*Q0.*(p0.^2-a0.*g0)./rr;
-  QQ = QQ+Q1;
-  
-  a0 = a1;
-  g0 = g1;
-  Q0 = Q1;
-  p0 = p1;
-  
+while max(w1(:)) > eps % assume ellip2 converges slower than ellip3
+
+ % for Elliptic I
+ a1 = (a0+g0)/2;
+ g1 = sqrt(a0.*g0);
+
+ % for Elliptic II
+ nn = nn + 1;
+ c1 = (a0-g0)/2;
+ w1 = 2^nn*c1.^2;
+ s0 = s0 + w1;
+
+ % for Elliptic III
+ rr = p0.^2+a0.*g0;
+ p1 = rr./(2.*p0);
+ Q1 = 0.5*Q0.*(p0.^2-a0.*g0)./rr;
+ QQ = QQ+Q1;
+
+ a0 = a1;
+ g0 = g1;
+ Q0 = Q1;
+ p0 = p1;
+
 end
 
 PI = pi./(4.*a1).*((m/(m-n)).*QQ);
 
 im = find(m == 1);
 if ~isempty(im)
+ k(im) = inf;
+ e(im) = ones(length(im),1);
  PI(im) = inf;
 end
 
