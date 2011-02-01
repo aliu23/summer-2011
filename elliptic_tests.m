@@ -230,7 +230,7 @@ tryF = round(10000*tryF)/10000;
 tryF;
 tryF==ellFvalues3;
 
-fprintf('incomplete F(m<=1,b<0):')
+fprintf('incomplete F(m<=1,b<0): ')
 
 if all(tryF(m<=1)==ellFvalues3(m<=1))
   fprintf('passed\n')
@@ -240,7 +240,7 @@ else
   fprintf('failed\n')
 end
 
-fprintf('Incomplete F(m<M,b<0): ')
+fprintf('Incomplete F(m<M, b<0): ')
 
 if all(tryF(m<M)==ellFvalues3(m<M)) 
   fprintf('passed\n')
@@ -277,7 +277,7 @@ else
   fprintf('failed\n')
 end
 
-fprintf('Incomplete E(m<M,b<0): ')
+fprintf('Incomplete E(m<M, b<0): ')
 
 if all(tryE(m<M)==ellEvalues3(m<M)) 
   fprintf('passed\n')
@@ -287,7 +287,7 @@ else
   fprintf('failed\n')
 end
 
-fprintf('Incomplete E(m>M,b<0): ')
+fprintf('Incomplete E(m>M, b<0): ')
 
 if all(tryE(m>M)==ellEvalues3(m>M)) 
   fprintf('passed\n')
