@@ -110,11 +110,14 @@ function [F,E]=elliptic12c(m)
 N=size(m);
 F=nan(size(m));
 
+% Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
 if any(m<0)
   mm=m(m<0);
   F(m<0)=(1./sqrt(1-mm)).*ellipke(-mm./(1-mm));
 end
 
+
+% Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
 if any(m>1)
   mm=m(m>1);
   F(m>1)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm)),1./mm));
@@ -127,14 +130,17 @@ end
 
 
 if nargout>1
+  
     E=nan(size(m));
     
+    % Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
     if any(m<0)
         mm=m(m<0);
         [FF,EE]= ellipke(-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
         E(m<0)=sqrt(1-mm).*EE;
     end
-    
+       
+    % Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
     if any(m>1)
         mm=m(m>1);
         [FF,EE]=elliptic12i(asin(sqrt(mm)),1./mm);      
@@ -171,9 +177,9 @@ if ~isequal(size(b),size(m))
   error('m and b must be equal sizes')
 end
 
+% Periodicity: http://dlmf.nist.gov/19.2#E10
 phase_ind = b>pi/2 | b<0;
 mone_ind= m==1;
-
 if any(phase_ind & ~mone_ind)
   
   mm = m(phase_ind);
@@ -185,12 +191,13 @@ if any(phase_ind & ~mone_ind)
   
 end
 
+% Special case: http://dlmf.nist.gov/19.6#E1
 if any(mone_ind)
   F(mone_ind)=inf;
 end
 
+% Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
 mneg_ind = m<0 & ~phase_ind;
-
 if any(mneg_ind)
   
   mm=m(mneg_ind);
@@ -201,6 +208,7 @@ if any(mneg_ind)
   
 end
 
+% Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
 mpos_ind = m>1 & ~phase_ind;
 if any(mpos_ind)
   
@@ -209,15 +217,15 @@ if any(mpos_ind)
   
   F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm));
   warning('elliptic123:F_bm_largem','Complex part may be missing and/or incorrect for ellipticF(b,m>1).');
+
 end
 
+% Regular old calculation
 mreg_ind=m<=1&m>=0 & ~phase_ind;
-
 if any(mreg_ind)
   
   mm=m(mreg_ind);
   bb=b(mreg_ind);
-  
   F(mreg_ind)=elliptic12i(bb,mm);
   
 end
@@ -225,6 +233,7 @@ end
 
 if nargout>1
    
+    % Periodicity: http://dlmf.nist.gov/19.2#E10
     phase_ind = b>pi/2 | b<0;
     if any(phase_ind)
         mm = m(phase_ind);
@@ -237,12 +246,14 @@ if nargout>1
         E(phase_ind) = 2*a.*E1 + sign(phi).*EE;
     end
     
+    % Special case: http://dlmf.nist.gov/19.6#E9
     mz_ind = m==0 & ~phase_ind;
     if any(mz_ind)
         bb=b(mz_ind);
         E(mz_ind)=bb;
     end
     
+    % Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
     mneg_ind = m<0 & ~phase_ind;
     if any(mneg_ind)
         mm=m(mneg_ind);
@@ -253,6 +264,7 @@ if nargout>1
         E(mneg_ind)=mm.*(sin(t).*cos(t)./sqrt(1-mm.*(cos(t)).^2))+sqrt(1-mm).*EE;
     end
     
+    % Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
     mpos_ind = m>1 & ~phase_ind;
     if any(mpos_ind)
         mm=m(mpos_ind);
@@ -263,7 +275,8 @@ if nargout>1
         warning('elliptic123:BadComplex','Complex part may be missing');
         
     end
-
+    
+    % Regular calculation:
     mreg_ind=m<=1&m>0 & ~phase_ind;
     if any(mreg_ind)
         mm=m(mreg_ind);
@@ -291,12 +304,14 @@ if ~isequal(size(n),size(m))
   error('Inputs m and b must be equal sizes')
 end
 
+% Special case: http://dlmf.nist.gov/19.6#E3
 mz_ind = m==0;
 if any(mz_ind)
   nn=n(mz_ind);
   P(mz_ind)=pi./(2.*sqrt(1-nn));
 end
 
+% Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
 mlnl_ind = m~=0 & m<=1 & n<=1;
 if any(mlnl_ind)
   nn=n(mlnl_ind);
@@ -304,6 +319,7 @@ if any(mlnl_ind)
   P(mlnl_ind)=ellippi(nn,mm);
 end
 
+% Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
 mgnl_ind=m>1 & n<=1;
 if any(mgnl_ind) %% this doesnt work as b becomes complex
   mm=m(mgnl_ind);
@@ -311,6 +327,7 @@ if any(mgnl_ind) %% this doesnt work as b becomes complex
   P(mgnl_ind)=1./sqrt(mm).*elliptic3ic(asin(sqrt(mm)),1./mm,nn./mm);
 end
 
+% Normal calculation:
 mlng_ind=n>1 & m<=1;
 if any(mlng_ind) %%only gives real
   mm=m(mlng_ind);
@@ -319,6 +336,7 @@ if any(mlng_ind) %%only gives real
   warning('elliptic123:MissingComplex','Cannot compute complex part for elliptic3(m,n) with m<=1 and n>1')
 end
 
+% Problem:
 mgng_ind=n>1 & m>1;
 if any(mgng_ind)
   warning('elliptic123:PI_mn_large','Cannot calculate elliptic3(m,n) for n>1 and m>1.')
@@ -326,14 +344,9 @@ end
 
 end
 
-function [P]=elliptic3x(b,m,n) 
 
-%   incomplete case
-%   P=elliptic3(b,m,n) where b is the phase angle in the range of 0<b<Pi/2
-%   module m where -inf<m<1 
-%   m>1 can be computed provided that the input phase angle is not complex 
-%   elliptic3 is not able to read complex inputs
-%   parameter n<1 
+
+function [P]=elliptic3x(b,m,n) 
 
 isize=max(max(size(b),size(m)),size(n));
 
@@ -348,8 +361,12 @@ end
 phase_ind = b>pi/2 | b<0;
 mone_ind= m==1;
 
-phasen_ind=phase_ind & n>1;
+% Periodicity for n>1
+%
+% This is not documented anywhere, but plotting the function in Mathematica
+% shows clearly that it's (anti-)symmetric around zero and pi/2.
 
+phasen_ind=phase_ind & n>1;
 if any(phasen_ind)
   
   mm = m(phasen_ind);
@@ -378,31 +395,35 @@ if any(phasen_ind)
   
 end
 
-
-if any(phase_ind & ~mone_ind & n<1)
+% Periodicity for n<1:
+% http://functions.wolfram.com/EllipticIntegrals/EllipticPi3/04/02/03/0001/
+ind = phase_ind & ~mone_ind & n<1;
+if any(ind)
   
-  mm = m(phase_ind);
-  bb = b(phase_ind);
-  nn = n(phase_ind);
+  mm = m(ind);
+  bb = b(ind);
+  nn = n(ind);
   
   phi = mod(bb+pi/2,pi)-pi/2;
   a = round(bb./pi);
-  P(phase_ind) = 2.*a.*elliptic3c(mm,nn) + sign(phi).*elliptic3x(abs(phi),mm,nn);
+  P(ind) = 2.*a.*elliptic3c(mm,nn) + sign(phi).*elliptic3x(abs(phi),mm,nn);
   
 end
 
-if any(phase_ind & mone_ind & ~phasen_ind)
-  P(mone_ind)=inf;
+% Special case:
+% http://functions.wolfram.com/EllipticIntegrals/EllipticPi3/03/01/01/0005/
+ind = phase_ind & mone_ind & ~phasen_ind;
+if any(ind)
+  P(ind)=inf;
 end
 
 M=(1./sin(b)).^2; %critical value which goes from real inputs to complex inputs
-
 if any(m>M)
   warning('elliptic123:PI_bmn_large_m','Cannot calculate elliptic3(b,m,n) with m greater than the critical value.')
 end
 
+% Special case m==n: http://dlmf.nist.gov/19.6#E13
 mnequal_ind = m==n & ~phase_ind;
-
 if any(mnequal_ind)
   
   bb=b(mnequal_ind);
@@ -415,8 +436,8 @@ if any(mnequal_ind)
   
 end
 
+% Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
 mgnl_ind = m>1 & n<1 & ~phase_ind;
-
 if any(mgnl_ind)
   
   bb=b(mgnl_ind);
@@ -427,8 +448,8 @@ if any(mgnl_ind)
   
 end
 
+% Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
 mlnl_ind = m~=n & m<0 & n<1 & ~phase_ind;
-
 if any(mlnl_ind)
   
   bb=b(mlnl_ind);
@@ -441,8 +462,8 @@ if any(mlnl_ind)
   
 end
 
+% Normal ranges:
 mnormnl_ind=n<1 & ~phase_ind & m>=0 & m<=1;
-
 if any(mnormnl_ind)
   
   bb=b(mnormnl_ind);
@@ -453,8 +474,8 @@ if any(mnormnl_ind)
   
 end
 
+% Refer to 17.7.8 in Abramowitz:
 ng_ind=n>1 & m<n & ~phase_ind; %case where n>1 but m<n
-
 if any(ng_ind)
   
   bb=b(ng_ind);
@@ -462,7 +483,7 @@ if any(ng_ind)
   nn=n(ng_ind);
   
   N=mm./nn;
-  P1=sqrt(((nn-1).*(1-mm./nn))); %refer to 17.7.8 in abramowitz
+  P1=sqrt(((nn-1).*(1-mm./nn)));
   D=sqrt(1-mm.*(sin(bb)).^2);
   
   P(ng_ind)=-elliptic3x(bb,mm,N)+elliptic12x(bb,mm)+(1./(2.*P1)).*log((D+P1.*tan(bb)).*(D-P1.*tan(bb)).^-1);
