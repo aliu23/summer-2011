@@ -61,7 +61,9 @@ function [F,E,P]=elliptic123(a1,a2,a3)
 %      0>n        Pass   Pass    Pass     Fail1
 %      0<n<1      Pass   Pass    Pass     Fail1
 %        n>1      Pass   Fail2   Fail2    Fail1
-% 
+%
+% Real  = elliptic12(b,m) fails with Re(b)=pi/2 and only the real part is
+%         calculated
 % Fail1 = elliptic3(b,m,n) only takes real inputs
 % Fail2 = no known transformation into standard form
 %
