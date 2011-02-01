@@ -1,0 +1,143 @@
+3D
+
+!! INPUTS
+
+l=ARG1
+
+
+!/batch,list
+/PREP7
+/TITLE, 3Dside
+ 
+! by allan liu 1175510
+
+ET,1,SOLID98
+
+MP,MURX,1,1 !air
+MP,MURX,2,1.05 			!magnet1 bottom magnet
+MP,MGYY,2,985244.9 
+MP,MURX,3,1.05 			!magnet2 top magnet
+MP,MGYY,3,-985244.9
+
+!l=0.06		!x distance of sideways movement
+
+X=0.22		!airgap width
+Y=0.192		!airgap height
+Z=0.22		!airgap depth
+q=0.1           !left side to magnet1
+a=0.01		!magnet half width
+b=0.004		!magnet half height
+c=0.01          !magnet half depth
+r=0.08		!bottom to magnet1
+s=0.1           !front to magnet1
+
+d=0.016 	!distance between edges of magnet 1 and 2
+
+BLOCK,0,X,0,Y,0,-Z		!Define the air gap
+BLOCK,q,q+2*a,r,r+2*b,-s,-(s+2*a)    !Define magnet 1
+BLOCK,q+l,q+2*a+l,r+2*b+d,r+4*b+d,-s,-(s+2*a) !Define magnet 2
+
+
+VSEL,S,VOLU,,2  	!selecting bottom magnet
+
+VATT,2,,1 	        !assigning material 2 to bottom magnet
+
+VSEL,S,VOLU,,3		!selecting top magnet
+
+VATT,3,,1		!assigning material 3 to top magnet
+
+
+VSEL,ALL
+
+VSBA,1,ALL,,,KEEP  	!subtract all from air
+VSEL,U,VOLU,,2,3	!unselect the areas exept for airgap
+
+VATT,1,,1
+
+!Boundary Conditions
+
+ALLSEL
+ASEL,S,EXT   ! Select exterior areas
+DL,ALL,,AZ,0 ! defining the exterior boundaries
+
+ALLSEL
+SMRT,1
+VMESH,ALL
+
+!Apply force flags:
+
+ESEL,S,MAT,,3       !Selecting material 3 top magnet
+CM,mag1,ELEM
+FMAGBC,'mag1'       !flagging magnet3 top magnet
+
+FINISH  
+ALLSEL
+/SOL
+MAGSOLV,2
+FINISH
+
+/POST1  
+/com,
+fmagsum,'mag1'
+
+ESEL,S,MAT,,3  ! Select floating magnet elements
+NSEL,S,EXT         ! Select exterior nodes of the floating magnet
+ESLN               ! Select elements touching selected nodes
+!  (ie outer magnet elements and touching air elements)
+ESEL,U,MAT,,3  ! Unselect elements made of magnet
+SSUM               ! Sum all forces held in these elements to get the overall forces on the magnet
+
+
+! READ MAXWELL STRESS TENSOR FORCES
+
+etab,fmgx1,fmag,x
+etab,fmgy1,fmag,y
+etab,fmgz1,fmag,z
+
+! READ centroids from global origin
+
+etab,cntrdx,cent,x
+etab,cntrdy,cent,y
+etab,cntrdz,cent,z
+
+! Create the lever arm for each element centroid wrt centre of magnet
+
+SADD,LEVX,cntrdx,,1,0,-(q+a+l)
+SADD,LEVY,cntrdy,,1,0,-(r+3*b+d)
+SADD,LEVZ,cntrdz,,1,0,(q+a)
+
+! CALCULATE TORQUES (VIRTUAL WORK)
+
+vcross,trqxvw,trqyvw,trqzvw,LEVX,LEVY,LEVZ,fvw_x,fvw_y,fvw_z
+
+! CALCULATE TORQUES (MAXWELL STRESS TENSOR)
+
+vcross,trqxmx,trqymx,trqzmx,LEVX,LEVY,LEVZ,fmgx1,fmgy1,fmgz1
+
+SSUM
+
+*dim,ff,ARRAY,8    ! Define a 8x1 array in which to store the forces
+*get,ff(1),ssum,fmx_x ! Store Maxwell stress force
+*get,ff(2),ssum,fvw_x ! Store Virtual work force
+*get,ff(3),ssum,fmx_y ! 
+*get,ff(4),ssum,fvw_y !
+*get,ff(5),ssum,fmx_z
+*get,ff(6),ssum,fvw_z
+*get,ff(7),ssum,trqzmx   !store maxwell torque about centre of magnet
+*get,ff(8),ssum,trqzvw   !store virtual work torque about centre of magnet
+
+
+/OUTPUT,'3dvalues','ansys',,APPEND ! Save the data at the end of the file
+
+*VWRITE,ff(1),ff(2),ff(3),ff(4),ff(5),ff(6),ff(7),ff(8)
+(F10.3) ! Fortran number format for the vwrite numbers
+
+/OUTPUT
+
+/EOF
+
+
+
+
+
+

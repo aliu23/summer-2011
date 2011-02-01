@@ -1,0 +1,31 @@
+/TITLE, iteration analysis of torque vs distance between magnets
+*ULIB,'torquevsangle','txt'
+
+pi=3.141592
+
+vsteps = 11
+Qmin = 0              ! Min vertical offset for floating magnet
+Qmax=pi/2.4
+schema=1
+
+/OUTPUT,'torqvsangle','ansys'
+*VWRITE,schema,vsteps,Qmin,Qmax
+
+(F10.3) ! Fortran number format for the vwrite numbers
+/OUTPUT
+
+
+
+*DO,vv,0,vsteps-1
+
+      PARSAV,scalar,'variables','saved' ! PARameter SAVe: save variables so they're not lost later on
+
+      Q = Qmin+vv*(Qmax-Qmin)/(vsteps-1)
+      *USE,TORQ,Q      
+      
+      FINISH
+      /CLEAR
+	 
+      PARRES,new,'variables','saved' ! PARameter REStore: restore variables killed by previous command
+	 
+*ENDDO

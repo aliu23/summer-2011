@@ -1,0 +1,31 @@
+/TITLE, iteration analysis of torque vs distance between magnets
+*ULIB,'sideways','txt'
+
+
+vsteps = 30
+lmin = 0              
+lmax= 0.06
+
+schema=2
+
+/OUTPUT,'sidevalues','ansys'
+*VWRITE,schema,vsteps,lmin,lmax
+
+(F10.3) ! Fortran number format for the vwrite numbers
+/OUTPUT
+
+
+
+*DO,vv,0,vsteps-1
+
+      PARSAV,scalar,'variables','saved' ! PARameter SAVe: save variables so they're not lost later on
+
+      l = lmin+vv*(lmax-lmin)/(vsteps-1)
+      *USE,SIDE,l      
+      
+      FINISH
+      /CLEAR
+	 
+      PARRES,new,'variables','saved' ! PARameter REStore: restore variables killed by previous command
+	 
+*ENDDO

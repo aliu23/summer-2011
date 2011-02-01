@@ -1,0 +1,188 @@
+TORQ
+
+!! INPUTS
+
+Q=ARG1
+
+
+!/batch,list
+/PREP7
+/TITLE,torque vs angle
+ 
+! by allan liu 1175510
+
+
+pi=4*atan(1)    !defining pi
+!Q=0         !angle of rotation
+
+ET,1,PLANE53
+
+MP,MURX,1,1 !air
+MP,MURX,2,1 !magnet1 bottom magnet
+MP,MGYY,2,1E6 
+MP,MURX,3,1 !magnet2 top magnet
+MP,MGXX,3,1E6*sin(Q)                 !currently in repulsion
+MP,MGYY,3,-1E6*cos(Q)
+
+/com,
+
+
+X=0.2		!airgap width
+Y=0.25		!airgap height
+c=0.09		!left side to magnet1
+a=0.01		!magnet half width
+b=0.01		!magnet half height
+m=0.08		!bottom to magnet1
+h1=0.035        !distance from bottom magnet to pt of rotation
+h2=0.035        !distance from top magnet to pt of rotation
+L=h1+h2
+
+
+
+
+
+
+RECTNG,0,X,0,Y  	!air gap
+RECTNG,c,c+2*a,m,m+2*b 	!magnet1
+
+!Defining key points in order to create top magnet
+
+k,9,c+a-h2*sin(Q)-a*cos(Q)-b*sin(Q),m+b+h1+h2*cos(Q)-a*sin(Q)+b*cos(Q)  !top left corner of top rotated magnet
+
+k,10,c+a-h2*sin(Q)-a*cos(Q)+b*sin(Q),m+b+h1+h2*cos(Q)-a*sin(Q)-b*cos(Q) !bottom left corner of top rotated magnet
+
+k,11,c+a-h2*sin(Q)+a*cos(Q)+b*sin(Q),m+b+h1+h2*cos(Q)+a*sin(Q)-b*cos(Q) !bottom right corner of top rotated magnet
+
+KWPLAN,-1,10,11,9   !creates a working plane at those keypoints (-1 means keep the view)
+
+CSYS,4       !changes active coordinate system to working plane
+
+/PREP7
+
+RECTNG,0,2*a,0,2*b      !creates the top magnet
+
+WPCSYS,-1,0             ! This re-aligns the WP with the global coordinate system
+
+ASEL,S,AREA,,2		!selecting bottom magnet
+
+AATT,2,,1 	        !assigning material 2 to bottom magnet
+
+ASEL,S,AREA,,3		!selecting top magnet
+
+AATT,3,,1		!assigning material 3 to top magnet
+
+ASEL,ALL
+ASBA,1,ALL,,,KEEP       !subtract all from air
+ASEL,U,AREA,,2,3	!unselect the areas exept for airgap
+AATT,1,,1		!assign air its material
+
+!Boundary Conditions
+
+ALLSEL
+LSEL,S,EXT   ! Select exterior nodes
+DL,ALL,,AZ,0 ! defining the exterior boundaries
+
+!Mesh:
+
+ALLSEL
+AESIZE,ALL,0.003
+AMESH,ALL
+
+!Apply force flags:
+
+ESEL,S,MAT,,3       !Selecting material 3 top magnet
+CM,mag1,ELEM
+FMAGBC,'mag1'       !flagging magnet3 top magnet
+
+FINISH  
+ALLSEL
+/SOL
+MAGSOLV,2
+FINISH
+
+
+
+
+/POST1  
+PLF2D
+/com,
+fmagsum,'mag1'
+torqsum,'mag1'    !path based seems to give the same answer
+
+
+
+ESEL,S,MAT,,3  ! Select floating magnet elements
+NSEL,S,EXT         ! Select exterior nodes of the floating magnet
+ESLN               ! Select elements touching selected nodes
+!  (ie outer magnet elements and touching air elements)
+ESEL,U,MAT,,3  ! Unselect elements made of magnet
+SSUM               ! Sum all forces held in these elements to get the overall forces on the magnet
+
+ETABLE,torquemx,nmisc,17
+
+SSUM
+
+ETABLE,torquevw,nmisc,18
+
+SSUM
+
+! READ MAXWELL STRESS TENSOR FORCES
+
+etab,fmgx1,fmag,x
+etab,fmgy1,fmag,y
+etab,fmgz1,fmag,z
+
+! READ centroids from global origin
+
+etab,cntrdx,cent,x
+etab,cntrdy,cent,y
+etab,cntrdz,cent,z
+
+! Create the lever arm for each element centroid wrt centre of magnet
+
+SADD,LEVX,cntrdx,,1,0,-(c+a-h2*sin(Q))
+SADD,LEVY,cntrdy,,1,0,-(m+b+h1+h2*cos(Q))
+SADD,LEVZ,cntrdz,,0,0,0
+
+! CALCULATE TORQUES (VIRTUAL WORK)
+
+vcross,trqxvw,trqyvw,trqzvw,LEVX,LEVY,LEVZ,fvw_x,fvw_y,fmgz1
+
+! CALCULATE TORQUES (MAXWELL STRESS TENSOR)
+
+vcross,trqxmx,trqymx,trqzmx,LEVX,LEVY,LEVZ,fmgx1,fmgy1,fmgz1
+
+ssum
+
+
+*dim,ff,ARRAY,8    ! Define a 8x1 array in which to store the forces
+*get,ff(1),ssum,fmx_x ! Store Maxwell stress force
+*get,ff(2),ssum,fvw_x ! Store Virtual work force
+*get,ff(3),ssum,fmx_y ! 
+*get,ff(4),ssum,fvw_y !
+*get,ff(5),ssum,torquemx !store maxwell torque global
+*get,ff(6),ssum,torquevw !store virtual work torque	
+*get,ff(7),ssum,trqzmx   !store maxwell torque about centre of magnet
+*get,ff(8),ssum,trqzvw   !store virtual work torque about centre of magnet
+
+
+
+
+
+/OUTPUT,'torqvsangle','ansys',,APPEND ! Save the data at the end of the file
+
+*VWRITE,ff(1),ff(2),ff(3),ff(4),ff(5),ff(6),ff(7),ff(8)
+(F10.3) ! Fortran number format for the vwrite numbers
+
+/OUTPUT
+
+/EOF
+
+
+
+
+
+
+
+
+
