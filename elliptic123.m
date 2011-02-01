@@ -28,12 +28,46 @@ function [F,E,P]=elliptic123(a1,a2,a3)
 %
 % There is a bug in the incomplete case for F and E: 
 %   when complex numbers are expected in the output, the complex part will
-%   not be calculated correctly when m>(1/sin(b))^2.
+%   not be calculated correctly when m>M where M=1/sin(b)^2.
 % 
-% There is a bug in the incomplete case for Pi 
-%   when complex numbers are expected in the input, Cannot evaluate
-% For the elliptic PI case when phase is greater than PI/2 and n>1, Cannot
-% evaluate
+%      F(m) & E(m): Pass for all real m
+% 
+%      F(b,m) & E(b,m):
+%                   m < M    m > M
+% 
+%      0>b          Pass     Real
+%      0<b<pi/2     Pass     Real
+%        b>pi/2     Pass     Real
+% 
+% There are many bugs in the calculations for EllipticPi:
+%
+%      PI(m,n):   m<=1   m>1
+%      
+%      0>n        Pass   Fail1
+%      0<n<1      Pass   Fail1
+%        n>1      Real   Fail2
+% 
+%     PI(b,m,n):  0<b<pi/2             
+%                 m<=1   1<m<M    m>M      
+%                 
+%      0>n        Pass   Pass     Fail1    
+%      0<n<1      Pass   Pass     Fail1
+%        n>1      Real   Real     Fail1
+%        n>m      Pass   Fail2    Fail1
+%               
+%     PI(b,m,n):  b<0 | pi>pi/2
+%                 m< 1   m=1     1<m<M    m>M
+%                 
+%      0>n        Pass   Pass    Pass     Fail1
+%      0<n<1      Pass   Pass    Pass     Fail1
+%        n>1      Pass   Fail2   Fail2    Fail1
+% 
+% Fail1 = elliptic3(b,m,n) only takes real inputs
+% Fail2 = no known transformation into standard form
+%
+% A better approach is to calculate the Carlson symmetric integrals
+% and work out EllipticPi from them.
+
 
 if nargout<3
   
@@ -86,7 +120,7 @@ if any(m>1)
   F(m>1)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm)),1./mm));
 end
 
-if any(m<=1&m>=0) % 0<m<=1
+if any(m<=1&m>=0)
   mm=m(m<=1&m>=0);
   F(m<=1&m>=0)=ellipke(mm);
 end
