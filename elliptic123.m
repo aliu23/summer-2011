@@ -1,4 +1,3 @@
-
 function [F,E,P]=elliptic123(a1,a2,a3)
 %ELLIPTIC123 computes the first, second and third elliptic integrals for
 % both the complete and incomplete cases and no restriction on the input
@@ -29,47 +28,63 @@ function [F,E,P]=elliptic123(a1,a2,a3)
 % There is a bug in the incomplete case for F and E: 
 %   when complex numbers are expected in the output, the complex part will
 %   not be calculated correctly when m>M where M=1/sin(b)^2.
-% 
-%      F(m) & E(m): Pass for all real m
-% 
-%      F(b,m) & E(b,m):
-%                   m < M    m > M
-% 
-%      0>b          Pass     Real
-%      0<b<pi/2     Pass     Real
-%        b>pi/2     Pass     Real
-% 
-% There are many bugs in the calculations for EllipticPi:
 %
-%      PI(m,n):   m<=1   m>1
+% There are many bugs in the calculations for EllipticPi. Results are
+% correct for n<1 & m<M but are otherwise largely incorrect/missing.
+%
+% See the notes at the beginning of elliptic123.m for more details.
+
+% Table of ranges for output "correctness".
+%
+% Pass  = Everything's okay.
+% Real  = elliptic12(b,m) fails with Re(b)=pi/2 and only the real part is
+%         calculated (also for internal function ellippin for calculating
+%         the complete third integral).
+% Fail1 = elliptic3(b,m,n) only takes real inputs.
+% Fail2 = No known transformation into standard form.
+%
+% 
+%     F(m) & E(m): Pass for all real m
+% 
+%     F(b,m) & E(b,m):
+%                 m < M  m > M
+% 
+%    b<0          Pass   Real
+%      0<b<pi/2   Pass   Real
+%        b>pi/2   Pass   Real
+% 
+%
+%     PI(m,n):   m<=1   m>1
 %      
-%      0>n        Pass   Fail1
+%    n<0          Pass   Fail1
 %      0<n<1      Pass   Fail1
-%        n>1      Real   Fail2
+%          1<n    Real   Fail2
 % 
 %     PI(b,m,n):  0<b<pi/2             
 %                 m<=1   1<m<M    m>M      
 %                 
-%      0>n        Pass   Pass     Fail1    
+%    n<0          Pass   Pass     Fail1    
 %      0<n<1      Pass   Pass     Fail1
-%        n>1      Real   Real     Fail1
-%        n>m      Pass   Fail2    Fail1
+%          1<n    Real   Real     Fail1
+%      m<n        Pass   Fail2    Fail1
 %               
 %     PI(b,m,n):  b<0 | pi>pi/2
-%                 m< 1   m=1     1<m<M    m>M
+%                 m<1    m=1     1<m<M    m>M
 %                 
-%      0>n        Pass   Pass    Pass     Fail1
+%    n<0          Pass   Pass    Pass     Fail1
 %      0<n<1      Pass   Pass    Pass     Fail1
-%        n>1      Pass   Fail2   Fail2    Fail1
+%          1<n    Pass   Fail2   Fail2    Fail1
 %
-% Real  = elliptic12(b,m) fails with Re(b)=pi/2 and only the real part is
-%         calculated
-% Fail1 = elliptic3(b,m,n) only takes real inputs
-% Fail2 = no known transformation into standard form
 %
 % A better approach is to calculate the Carlson symmetric integrals
 % and work out EllipticPi from them.
 
+% Copyright 2010-2011 Allan Liu and Will Robertson <wspr81@gmail.com>
+%
+% GNU GENERAL PUBLIC LICENSE Version 2, June 1991
+% http://www.gnu.org/licenses/gpl.html 
+% Everyone is permitted to copy and distribute verbatim copies of this 
+% script under terms and conditions of GNU GENERAL PUBLIC LICENSE. 
 
 if nargout<3
   
