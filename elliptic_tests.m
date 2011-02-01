@@ -888,18 +888,25 @@ tryPI;
 
 tryPI==ellPIvalues32;
 
-fprintf('Incomplete PI(m<=1,b<0,n>1): ')
+fprintf('Incomplete PI(m<1,b<0,n>1): ')
 
-if all(tryPI(m<=1)==ellPIvalues32(m<=1)) 
-  fprintf('passed\n')
-  
-elseif all(tryPI(m<1)==ellPIvalues32(m<1))&& all(tryPI(m==1)~=ellPIvalues32(m==1))
-    fprintf('problem at m=1 otherwised passed\n')
-    
+if all(tryPI(m<1)==ellPIvalues32(m<1)) 
+  fprintf('passed\n')  
 elseif all(real(tryPI(m<=1))==real(ellPIvalues32(m<=1)))
   fprintf('real components correct, missing complex\n')
 else
-  fprintf('failed due to n>1\n')
+  fprintf('failed\n')
+end
+
+
+fprintf('Incomplete PI(m==1,b<0,n>1): ')
+
+if all(tryPI(m==1)==ellPIvalues32(m==1)) 
+  fprintf('passed\n')  
+elseif all(real(tryPI(m==1))==real(ellPIvalues32(m==1)))
+  fprintf('real components correct, missing complex\n')
+else
+  fprintf('failed\n')
 end
 
 fprintf('Incomplete PI(m<M,b<0,n>1): ')
@@ -925,6 +932,8 @@ elseif all(real(tryPI(m>M))==real(ellPIvalues32(m>M)))
 else 
   fprintf('failed due to a complex b\n')
 end
+
+error
 
 %% For n<0
 
