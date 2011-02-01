@@ -91,9 +91,3 @@ Ty=Ty.*br1*br2/(4*pi*mo);
 Tz=Tz.*br1*br2/(4*pi*mo);
                         
 end
-
-
-%% test
-%[Tx Ty Tz] = Torque(0.005,0.013,0.007,0.005,0.013,0.007,[0:0.001:0.035],-0.008,0.015,0,0,-0.047,1.23,-1.23)
- %figure; hold on; plot(real(Tx),'r'); plot(real(Ty),'b'); plot(real(Tz),'k'); legend('x','y','z')
-
