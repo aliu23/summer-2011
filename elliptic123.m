@@ -145,29 +145,28 @@ if any(m<=1&m>=0)
   F(m<=1&m>=0)=ellipke(mm);
 end
 
-
 if nargout>1
   
-    E=nan(size(m));
-    
-    % Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
-    if any(m<0)
-        mm=m(m<0);
-        [FF,EE]= ellipke(-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
-        E(m<0)=sqrt(1-mm).*EE;
-    end
-       
-    % Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
-    if any(m>1)
-        mm=m(m>1);
-        [FF,EE]=elliptic12i(asin(sqrt(mm)),1./mm);      
-        E(m>1)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
-    end
-    
-    if any(m<=1&m>=0)
-        mm=m(m<=1&m>=0);
-        [FF,E(m<=1&m>=0)]=ellipke(mm);
-    end
+  E=nan(size(m));
+  
+  % Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
+  if any(m<0)
+    mm=m(m<0);
+    [FF,EE]= ellipke(-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
+    E(m<0)=sqrt(1-mm).*EE;
+  end
+  
+  % Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
+  if any(m>1)
+    mm=m(m>1);
+    [FF,EE]=elliptic12i(asin(sqrt(mm)),1./mm);
+    E(m>1)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
+  end
+  
+  if any(m<=1&m>=0)
+    mm=m(m<=1&m>=0);
+    [FF,E(m<=1&m>=0)]=ellipke(mm);
+  end
 end
 
 end
@@ -175,7 +174,7 @@ end
 
 function [F,E]=elliptic12x(b,m)
 %ELLIPTIC12x computes the first and second Elliptic integrals for the
-% incomplete cases and no restriction on the input arguments. 
+% incomplete cases and no restriction on the input arguments.
 %
 % [F,E]=elliptic12(b,m)
 %   Calculate incomplete elliptic integrals of the first and second kind,
@@ -183,7 +182,7 @@ function [F,E]=elliptic12x(b,m)
 %    - Phase angle b may be any real or complex number
 %    - Parameter m can be any real number
 %
-% There is a bug: (!) 
+% There is a bug: (!)
 %   when complex numbers are expected in the output, the complex part will
 %   not be calculated correctly when m>(1/sin(b))^2.
 
@@ -234,7 +233,7 @@ if any(mpos_ind)
   
   F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm));
   warning('elliptic123:F_bm_largem','Complex part may be missing and/or incorrect for ellipticF(b,m>1).');
-
+  
 end
 
 % Regular old calculation
@@ -249,65 +248,65 @@ end
 
 
 if nargout>1
-   
-    % Periodicity: http://dlmf.nist.gov/19.2#E10
-    phase_ind = b>pi/2 | b<0;
-    if any(phase_ind)
-        mm = m(phase_ind);
-        bb = b(phase_ind);
-        
-        phi = mod(bb+pi/2,pi)-pi/2;
-        a = round(bb./pi);
-        [F1,E1]=elliptic12c(mm);
-        [FF,EE]=elliptic12x(abs(phi),mm);
-        E(phase_ind) = 2*a.*E1 + sign(phi).*EE;
-    end
+  
+  % Periodicity: http://dlmf.nist.gov/19.2#E10
+  phase_ind = b>pi/2 | b<0;
+  if any(phase_ind)
+    mm = m(phase_ind);
+    bb = b(phase_ind);
     
-    % Special case: http://dlmf.nist.gov/19.6#E9
-    mz_ind = m==0 & ~phase_ind;
-    if any(mz_ind)
-        bb=b(mz_ind);
-        E(mz_ind)=bb;
-    end
+    phi = mod(bb+pi/2,pi)-pi/2;
+    a = round(bb./pi);
+    [F1,E1]=elliptic12c(mm);
+    [FF,EE]=elliptic12x(abs(phi),mm);
+    E(phase_ind) = 2*a.*E1 + sign(phi).*EE;
+  end
+  
+  % Special case: http://dlmf.nist.gov/19.6#E9
+  mz_ind = m==0 & ~phase_ind;
+  if any(mz_ind)
+    bb=b(mz_ind);
+    E(mz_ind)=bb;
+  end
+  
+  % Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
+  mneg_ind = m<0 & ~phase_ind;
+  if any(mneg_ind)
+    mm=m(mneg_ind);
+    bb=b(mneg_ind);
     
-    % Imaginary-modulus transformation: http://dlmf.nist.gov/19.7#E5
-    mneg_ind = m<0 & ~phase_ind;
-    if any(mneg_ind)
-        mm=m(mneg_ind);
-        bb=b(mneg_ind);
-       
-        t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
-        [FF,EE]= elliptic12i(t,-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
-        E(mneg_ind)=mm.*(sin(t).*cos(t)./sqrt(1-mm.*(cos(t)).^2))+sqrt(1-mm).*EE;
-    end
+    t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
+    [FF,EE]= elliptic12i(t,-mm./(1-mm)); %to define if your using the F output in elliptic12 or the E output
+    E(mneg_ind)=mm.*(sin(t).*cos(t)./sqrt(1-mm.*(cos(t)).^2))+sqrt(1-mm).*EE;
+  end
+  
+  % Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
+  mpos_ind = m>1 & ~phase_ind;
+  if any(mpos_ind)
+    mm=m(mpos_ind);
+    bb=b(mpos_ind);
     
-    % Reciprocal-modulus transformation: http://dlmf.nist.gov/19.7#E4
-    mpos_ind = m>1 & ~phase_ind;
-    if any(mpos_ind)
-        mm=m(mpos_ind);
-        bb=b(mpos_ind);
-        
-        [FF,EE]=elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm); %cannot display complex part      
-        E(mpos_ind)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
-        warning('elliptic123:BadComplex','Complex part may be missing');
-        
-    end
+    [FF,EE]=elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm); %cannot display complex part
+    E(mpos_ind)=((1./sqrt(mm))-sqrt(mm)).*FF+sqrt(mm).*EE;
+    warning('elliptic123:BadComplex','Complex part may be missing');
     
-    % Regular calculation:
-    mreg_ind=m<=1&m>0 & ~phase_ind;
-    if any(mreg_ind)
-        mm=m(mreg_ind);
-        bb=b(mreg_ind);
-        [FF,E(mreg_ind)]=elliptic12i(bb,mm); %note the elliptic12i function cannot evaluate at m=0 for E
-    end
-      
+  end
+  
+  % Regular calculation:
+  mreg_ind=m<=1&m>0 & ~phase_ind;
+  if any(mreg_ind)
+    mm=m(mreg_ind);
+    bb=b(mreg_ind);
+    [FF,E(mreg_ind)]=elliptic12i(bb,mm); %note the elliptic12i function cannot evaluate at m=0 for E
+  end
+  
 end
 
 end
 
 
 
-function [P]=elliptic3c(m,n) 
+function [P]=elliptic3c(m,n)
 
 %   For the complete case P=elliptic3(m,n)
 %   simpler equations implemented (ellippi and ellippin)
@@ -363,7 +362,7 @@ end
 
 
 
-function [P]=elliptic3x(b,m,n) 
+function [P]=elliptic3x(b,m,n)
 
 isize=max(max(size(b),size(m)),size(n));
 
@@ -507,7 +506,7 @@ if any(ng_ind)
   
 end
 
-if any(n>1 & ~phase_ind & m>n)  
+if any(n>1 & ~phase_ind & m>n)
   warning('elliptic123:PI_bmn_large','Cannot calculate elliptic3(b,m,n) for n>1 and m>n.')
 end
 
