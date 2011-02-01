@@ -933,8 +933,6 @@ else
   fprintf('failed due to a complex b\n')
 end
 
-error
-
 %% For n<0
 
 n = -3;
