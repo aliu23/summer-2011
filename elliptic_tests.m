@@ -3,8 +3,11 @@
 clc
 
 warning off elliptic123:BadComplex
-
 warning off elliptic123:MissingComplex
+warning off elliptic123:F_bm_largem
+warning off elliptic123:PI_mn_large
+warning off elliptic123:PI_bmn_large
+warning off elliptic123:PI_bmn_large_m
 
 m = -5:0.5:5;
 
@@ -378,10 +381,8 @@ fprintf('Complete PI(m>1, n>1): ')
 
 if all(tryPI(m>1)==ellPIvalues2(m>1)) 
   fprintf('passed\n')
-elseif all(real(tryPI(m>1))==real(ellPIvalues2(m>1)))
-  fprintf('real components correct, missing complex\n')
 else
-  fprintf('failed due to a complex b input into elliptic3ic\n')
+  fprintf('failed (branch not possible)\n')
 end
 
    

@@ -155,14 +155,14 @@ if any(mone_ind)
   F(mone_ind)=inf;
 end
 
-mneg_ind = m<0 & ~phase_ind; %m<0 and when b IS in normal range
+mneg_ind = m<0 & ~phase_ind;
 
 if any(mneg_ind)
   
   mm=m(mneg_ind);
   bb=b(mneg_ind);
   
-  t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2)); %t is actually theta
+  t=asin((sin(bb).*sqrt(1-mm))./sqrt(1-mm.*(sin(bb)).^2));
   F(mneg_ind)=(1./sqrt(1-mm)).*elliptic12i(t,-mm./(1-mm));
   
 end
@@ -173,8 +173,8 @@ if any(mpos_ind)
   mm=m(mpos_ind);
   bb=b(mpos_ind);
   
-  F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm)); %cannot output complex part
-  % disp('complex part may be missing');
+  F(mpos_ind)=(1./sqrt(mm)).*(elliptic12i(asin(sqrt(mm).*sin(bb)),1./mm));
+  warning('elliptic123:F_bm_largem','Complex part may be missing and/or incorrect for ellipticF(b,m>1).');
 end
 
 mreg_ind=m<=1&m>=0 & ~phase_ind;
@@ -254,62 +254,40 @@ if length(m)==1, m=m(ones(size(n))); end
 if length(n)==1, n=n(ones(size(m))); end
 
 if ~isequal(size(n),size(m))
-  error('m and b must be equal sizes')
+  error('Inputs m and b must be equal sizes')
 end
 
 mz_ind = m==0;
-
 if any(mz_ind)
-  
   nn=n(mz_ind);
-  
   P(mz_ind)=pi./(2.*sqrt(1-nn));
-  
 end
 
-mlnl_ind = m~=0 & m<=1 & n<=1; % mless than 1 and nless than 1 index
-
+mlnl_ind = m~=0 & m<=1 & n<=1;
 if any(mlnl_ind)
-  
   nn=n(mlnl_ind);
   mm=m(mlnl_ind);
-  
   P(mlnl_ind)=ellippi(nn,mm);
-  
-  %P=1/((n-m)*sqrt(1-m))*(-m*ellipke(-m/(1-m))+n*ellippi((n-m)/(1-m),-m/(1-m)));
-  
 end
 
 mgnl_ind=m>1 & n<=1;
-
 if any(mgnl_ind) %% this doesnt work as b becomes complex
-  
   mm=m(mgnl_ind);
   nn=n(mgnl_ind);
-  
   P(mgnl_ind)=1./sqrt(mm).*elliptic3ic(asin(sqrt(mm)),1./mm,nn./mm);
-  
 end
 
 mlng_ind=n>1 & m<=1;
-
 if any(mlng_ind) %%only gives real
-  
   mm=m(mlng_ind);
   nn=n(mlng_ind);
-  
   P(mlng_ind)=ellippin(nn,mm);
-  
-  warning('elliptic123:MissingComplex','Cannot compute complex part for Elliptic3 with m<=1 and n>1')
-  
+  warning('elliptic123:MissingComplex','Cannot compute complex part for elliptic3(m,n) with m<=1 and n>1')
 end
 
 mgng_ind=n>1 & m>1;
-
 if any(mgng_ind)
-  
-  error('n and m vectors cannot have 1 component greater than 1')
-  
+  warning('elliptic123:PI_mn_large','Cannot calculate elliptic3(m,n) for n>1 and m>1.')
 end
 
 end
@@ -329,16 +307,14 @@ if length(n)==1, n=n(ones(isize)); end
 if length(m)==1, m=m(ones(isize)); end
 if length(b)==1, b=b(ones(isize)); end
 
-if ~isequal(size(n),size(m))|| ~isequal(size(n),size(b))
-  
-  error('m and b and n must be equal sizes')
+if ~isequal(size(n),size(m)) || ~isequal(size(n),size(b))
+  error('Inputs m and b and n must be equal sizes.')
 end
 
 phase_ind = b>pi/2 | b<0;
 mone_ind= m==1;
 
 phasen_ind=phase_ind & n>1;
-phasenm_ind=phasen_ind & mone_ind;
 
 if any(phasen_ind)
   
@@ -346,51 +322,30 @@ if any(phasen_ind)
   bb = b(phasen_ind);
   nn = n(phasen_ind);
   
-  
   if any(b>pi/2 & b<pi)
     
     cc=bb-pi/2;
-    
     P(phasen_ind)=conj(-elliptic3x(pi/2-cc,mm,nn));
     
   elseif any(b>pi)
-    
-    %a=round(bb./pi);
     
     P(phasen_ind)=conj(elliptic3x(bb-pi,mm,nn));
     
   elseif any(b<-pi/2 & b>-pi)
     
     cc=-pi/2-bb;
-    
     P(phasen_ind)=conj(-elliptic3x(-pi/2+cc,mm,nn));
     
   elseif any(b<pi)
     
     P(phasen_ind)=conj(elliptic3x(bb+pi,mm,nn));
+    
   end
   
 end
 
-%if any(phasenm_ind)
 
-%P(phasenm_ind)=-elliptic3x(bb,mm,nn);
-
-
-%end
-%if any(phasenm_ind)
-
-%disp('fff')
-%mm = m(phasenm_ind);
-%bb = b(phasenm_ind);
-%nn = n(phasenm_ind);
-
-%P(phasenm_ind)=(1./(1-nn)).*(log(tan(bb)+sec(bb))-0.5.*sqrt(nn).*log(1+sqrt(nn).*sin(bb))./(1-sqrt(nn).*sin(bb)));
-
-%end
-
-if any(phase_ind & ~mone_ind & n<1) %& n<1 & n>-1 When b is out side of the normal range n should be between -1 and 1 but works for n<0 anyway
-  %doesnt work for n>1
+if any(phase_ind & ~mone_ind & n<1)
   
   mm = m(phase_ind);
   bb = b(phase_ind);
@@ -399,21 +354,17 @@ if any(phase_ind & ~mone_ind & n<1) %& n<1 & n>-1 When b is out side of the norm
   phi = mod(bb+pi/2,pi)-pi/2;
   a = round(bb./pi);
   P(phase_ind) = 2.*a.*elliptic3c(mm,nn) + sign(phi).*elliptic3x(abs(phi),mm,nn);
+  
 end
 
 if any(phase_ind & mone_ind & ~phasen_ind)
-  
   P(mone_ind)=inf;
 end
 
 M=(1./sin(b)).^2; %critical value which goes from real inputs to complex inputs
 
-m_ind= m>M;
-
-if any(m_ind)
-  
-  error('one of your m value inputs is greater than the critical value')
-  
+if any(m>M)
+  warning('elliptic123:PI_bmn_large_m','Cannot calculate elliptic3(b,m,n) with m greater than the critical value.')
 end
 
 mnequal_ind = m==n & ~phase_ind;
@@ -456,7 +407,7 @@ if any(mlnl_ind)
   
 end
 
-mnormnl_ind=n<1 & ~phase_ind & m>=0 & m<=1; %when m is between [0 1] and n<1
+mnormnl_ind=n<1 & ~phase_ind & m>=0 & m<=1;
 
 if any(mnormnl_ind)
   
@@ -464,7 +415,6 @@ if any(mnormnl_ind)
   mm=m(mnormnl_ind);
   nn=n(mnormnl_ind);
   
-  %P(mnormnl_ind)=(1./(1-nn)).*(log(tan(bb)+sec(bb))-0.5.*sqrt(nn).*log(1+sqrt(nn).*sin(bb))./((1-sqrt(nn).*sin(bb))));
   P(mnormnl_ind)=elliptic3ic(bb,mm,nn);
   
 end
@@ -481,20 +431,21 @@ if any(ng_ind)
   P1=sqrt(((nn-1).*(1-mm./nn))); %refer to 17.7.8 in abramowitz
   D=sqrt(1-mm.*(sin(bb)).^2);
   
-  %P(ng_ind)=(1./(1-nn)).*(log(tan(bb)+sec(bb))-0.5.*sqrt(nn).*log(1+sqrt(nn).*sin(bb))./((1-sqrt(nn).*sin(bb))));
   P(ng_ind)=-elliptic3x(bb,mm,N)+elliptic12x(bb,mm)+(1./(2.*P1)).*log((D+P1.*tan(bb)).*(D-P1.*tan(bb)).^-1);
   
 end
 
-ngreat_ind=n>1 & ~phase_ind & m>n;
-
-if any(ngreat_ind)
-  
-  error('one of your n inputs is not less than 1')
-  
+if any(n>1 & ~phase_ind & m>n)  
+  warning('elliptic123:PI_bmn_large','Cannot calculate elliptic3(b,m,n) for n>1 and m>n.')
 end
 
 end
+
+
+
+
+
+
 
 function [Fi,Ei,Zi] = elliptic12i(u,m,tol)
 
