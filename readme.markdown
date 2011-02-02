@@ -18,8 +18,7 @@ integrals for these greater ranges.
 
 Files:
 
-* `elliptic12.m`
-* `elliptic3.m`
+* `elliptic123.m`
 * `elliptic_tests.m`
 
 
@@ -32,7 +31,13 @@ etc., between magnets that is located on GitHub: <http://github.com/wspr/magcode
 Files:
 
 * `Torque.m` — Calculating the torque between two parallel cuboid magnets.
+* `magnetcoil.m` — Calculating the axial between a coaxial magnet and solenoid.
 
+ANSYS
+-----
+
+Various scripts for calculating force and torque for a variety of geometries
+in Ansys. See the files in the relevant folder for further information.
 
 Copyright and licensing
 -----------------------
