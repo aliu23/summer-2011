@@ -18,11 +18,11 @@ pi=4*atan(1)    !defining pi
 ET,1,PLANE53
 
 MP,MURX,1,1 !air
-MP,MURX,2,1 !magnet1 bottom magnet
-MP,MGYY,2,1E6 
-MP,MURX,3,1 !magnet2 top magnet
-MP,MGXX,3,1E6*sin(Q)                 !currently in repulsion
-MP,MGYY,3,-1E6*cos(Q)
+MP,MURX,2,1.05 !magnet1 bottom magnet
+MP,MGYY,2,985244.9 
+MP,MURX,3,1.05 !magnet2 top magnet
+MP,MGXX,3,985244.9*sin(Q)                 !currently in repulsion
+MP,MGYY,3,-985244.9*cos(Q)
 
 /com,
 

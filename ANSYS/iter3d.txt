@@ -6,7 +6,7 @@ vsteps = 11
 lmin = 0              
 lmax= 0.06
 
-schema=2
+schema=3
 
 /OUTPUT,'3dvalues','ansys'
 *VWRITE,schema,vsteps,lmin,lmax
