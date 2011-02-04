@@ -1,0 +1,120 @@
+
+
+
+!/batch,list
+/PREP7
+/TITLE,preliminary magnet configuration 
+! by allan liu 1175510
+
+! Filter out unneeded options in the GUI:
+KEYW,PR_SET,1   
+KEYW,PR_ELMAG,1 
+KEYW,MAGNOD,1
+
+ET,1,PLANE53                ! Define PLANE 53 as element type
+KEYOPT,1,3,1                ! Use axisymmetric analysis option
+
+MP,MURX,1,1 !air
+MP,MURX,2,1 !magnet1 bottom magnet
+
+MP,MGYY,2,1E6
+MP,MURX,3,1 !magnet2 top magnet
+MP,MGYY,3,-1E6
+MP,MURX,4,1000 !iron shielding
+
+
+/com,
+
+a=0.075   !air gap width
+b=0.165	  !air gap height		
+c=0.02    !bottom magnet width
+n=0.02    !gap between bottom magnet and side shield
+s=0.03    !distance between bottom shield and bottom of airgap
+t=0.005   !thickness of shield
+d=0.025   !height of magnet1
+x=0.025   !distance between 2 magnets
+w=0.04    !height of magnet2
+u=0.006   !top magnet width
+m=0.01    !distance between bottom of magnet1 and bottom shield
+
+
+
+RECTNG,0,a,0,b    !Air gap
+RECTNG,0,c+n+t,s,s+t    !bottom shield
+RECTNG,c+n,c+n+t,s+t,s+t+m+d+x+w    !side shield
+AADD,2,3     !Adding the iron shielding together to form one area
+
+RECTNG,0,c,s+t+m,s+t+m+d   !magnet1
+RECTNG,0,u,s+t+m+d+x,s+t+m+d+x+W   !magnet2
+
+
+ASEL,S,AREA,,2		!selecting bottom magnet
+AATT,2,,1		!assigning material 2 to bottom magnet
+ASEL,S,AREA,,3		!selecting top magnet
+AATT,3,,1		!assigning material 3 to top magnet
+ASEL,S,AREA,,4          !selecting iron shield
+AATT,4,,1               !assigning material 4 to shield
+
+
+ASEL,ALL
+ASBA,1,ALL,,,KEEP       !subtract all from air
+ASEL,U,AREA,,2,4	!unselect the areas exept for airgap
+AATT,1,,1		!assign air its material
+
+! Boundary conditions:
+ALLSEL
+LSEL,S,EXT   ! Select exterior nodes
+DL,ALL,,AZ,0 ! defining the exterior boundaries
+
+
+!Mesh:
+
+ALLSEL
+SMRT,1
+AMESH,ALL
+
+!Apply force flags:
+
+ESEL,S,MAT,,3       !Selecting material 3 top magnet
+CM,mag1,ELEM
+FMAGBC,'mag1'       !flagging magnet3 top magnet
+
+FINISH  
+ALLSEL
+/SOL
+MAGSOLV,2
+FINISH
+
+
+/POST1  
+PLF2D
+/com,
+fmagsum,'mag1'
+
+
+
+ESEL,S,MAT,,3  ! Select floating magnet elements
+NSEL,S,EXT         ! Select exterior nodes of the floating magnet
+ESLN               ! Select elements touching selected nodes
+!  (ie outer magnet elements and touching air elements)
+ESEL,U,MAT,,3  ! Unselect elements made of magnet
+SSUM               ! Sum all forces held in these elements to get the overall forces on the magnet
+
+*dim,ff,ARRAY,6       ! Define a 4x1 array in which to store the forces
+*get,ff(1),ssum,fmx_x ! Store Maxwell stress force
+*get,ff(2),ssum,fvw_x ! Store Virtual work force
+*get,ff(3),ssum,fmx_y ! 
+*get,ff(4),ssum,fvw_y ! 
+*get,ff(5),ssum,fmx_z ! 
+*get,ff(6),ssum,fvw_z ! 
+
+/OUTPUT,'prosth','ansys',,APPEND ! Save the data at the end of the file
+
+*VWRITE,ff(1),ff(2),ff(3),ff(4),ff(5),ff(6)
+(F10.3) ! Fortran number format for the vwrite numbers
+/OUTPUT
+
+/EOF
+
+
+
